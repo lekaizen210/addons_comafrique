@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    	
+    	<record id="act_order_2_request" model="ir.actions.act_window">
+           <field name="res_model">purchase.request</field>
+           <field name="view_type">form</field>
+           <field name="name">Expression de besoin</field>
+           <field name="view_mode">tree,form</field>
+           <field name="context">{'search_default_order_id': [active_id], 'default_order_id': active_id}</field>
+        </record>
+
+    	<record id="view_purchase_order_inh_filter" model="ir.ui.view">
+            <field name="name">purchase.order.list.select</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="request_id"/>
+                </field>
+            </field>
+        </record>
+
+       <record model="ir.ui.view" id="purchase_order_inh_form_view">
+                <field name="name">purchase.order.form.inh</field>
+                <field name="model">purchase.order</field>
+                <field name="type">form</field>
+                <field name="inherit_id" ref="purchase.purchase_order_form"/>
+                <field name="arch" type="xml">
+                    <div class="oe_button_box" name="button_box" position="inside">
+                        <button name="%(act_order_2_request)d" attrs="{'invisible':[('nb_request','&lt;=',0)]}"
+                            class="oe_stat_button"
+                            icon="fa-edit"
+                            type="action"
+                            groups="comafrique_groups.group_budget_viewer,comafrique_groups.group_administration">
+                            <field name="nb_request" widget="statinfo" string="Exp. Besoin"/>
+                        </button>
+                    </div>
+
+                    <field name="date_order" position="after">
+                        <field name="request_id" readonly="1" attrs="{'invisible': [('request_id','=',False)]}"/>
+                        <field name="request_ref" attrs="{'invisible': [('request_id','!=',False)]}"/>
+                    </field>
+
+                    <xpath expr="//button[@id='bid_confirm']" position="replace"/>
+                    <xpath expr="//button[@id='draft_confirm']" position="replace">
+                        <button name="action_confirm_order" type="object" states="validated" string="Confirmer la commande" id="validate_confirm" class="oe_highlight"/>
+                    </xpath>
+
+                    <xpath expr="//button[@name='button_cancel']" position="before">
+                        <button name="action_submit" type="object" states="draft,sent" string="Soumettre au Responsable Q &#38; L"
+                                class="oe_highlight" id="draft_submit" groups="comafrique_groups.group_administration"/>
+
+                        <button name="button_draft" type="object" states="submitted" string="Retourner à l'Assistant Q &#38; L"
+                                class="oe_highlight" id="submit_draft" groups="comafrique_groups.group_resp_adv"/>
+
+                        <button name="action_direction" type="object" states="submitted" string="Soumettre à la Direction"
+                                class="oe_highlight" id="submit_direction" groups="comafrique_groups.group_resp_adv"/>
+
+                        <button name="action_submit" type="object" states="direction" string="Retourner au Responsable Q &#38; L"
+                                class="oe_highlight" id="direction_submit" groups="comafrique_groups.group_direction"/>
+
+                        <button name="button_cancel" type="object" states="direction,done" string="Annuler la commande"
+                                class="oe_highlight" id="direction_cancel" groups="comafrique_groups.group_direction"/>
+
+                        <button name="action_validate" type="object" states="direction" string="Valider"
+                                class="oe_highlight" id="direction_validate" groups="comafrique_groups.group_direction"/>
+
+
+                    </xpath>
+
+                    <field name="partner_ref" position="after">
+                        <field name="mail_destination" invisible="1"/>
+                        <field name="url_link" invisible="1"/>
+                        <field name="direction_user_id" invisible="1"/>
+                        <field name="notify" groups="comafrique_groups.group_control,base.group_system"/>
+                    </field>
+
+                    <xpath expr="//field[@name='order_line']/tree/field[@name='analytic_tag_ids']" position="attributes">
+                        <attribute name="invisible">1</attribute>
+                    </xpath>
+                    <xpath expr="//button[@name='action_view_picking']" position="replace">
+                        <!--<button type="object"-->
+                            <!--name="action_view_picking"-->
+                            <!--class="oe_stat_button"-->
+                            <!--icon="fa-truck" attrs="{'invisible':[('state', 'in', ('draft','sent','to approve','submitted','direction','validated'))]}">-->
+                            <!--<field name="picking_count" widget="statinfo" string="Shipment" help="Incoming Shipments"/>-->
+                            <!--<field name="picking_ids" invisible="1"/>-->
+                        <!--</button>-->
+
+                    </xpath>
+                </field>
+            </record>
+    </data>
+
+    <record id="purchase_order_inh_tree" model="ir.ui.view">
+        <field name="name">purchase.order.tree</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="colors">red:state=='direction'</attribute>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="req_purchase_form_action" model="ir.actions.act_window">
+            <field name="name">Bon de commande</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">purchase.order</field>
+            <field name="view_mode">tree,kanban,form,pivot,graph,calendar</field>
+            <field name="context">{'search_default_todo':1, 'show_purchase': True}</field>
+            <field name="domain">[('state','not in',('draft','sent','bid', 'confirmed'))]</field>
+            <field name="search_view_id" ref="purchase.view_purchase_order_filter"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create a quotation that will be converted into a purchase order.
+              </p><p>
+                Use this menu to search within your purchase orders by
+                references, vendor, products, etc. For each purchase order,
+                you can track the related discussion with the vendor, control
+                the products received and control the vendor bills.
+              </p>
+            </field>
+        </record>
+        <!--<menuitem action="req_purchase_form_action" id="req_menu_purchase_form_action" parent="expression_besoin_menu_main" sequence="20"/>-->
+
+</openerp>

@@ -1,0 +1,46 @@
+<odoo>
+
+  <record id="view_account_analytic_account_form" model="ir.ui.view">
+      <field name="name">account.analytic.account.form</field>
+      <field name="model">account.analytic.account</field>
+      <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
+      <field name="arch" type="xml">
+          <field name="code" position="after">
+              <field name="department_id"/>
+              <field name="section_id"/>
+              <field name="section_child_id" domain="[('section_id','=',section_id)]"/>
+          </field>
+          <field name="tag_ids" position="after">
+              <field name="type"/>
+          </field>
+      </field>
+  </record>
+
+  <record id="view_account_analytic_line_form" model="ir.ui.view">
+      <field name="name">account.analytic.line.form</field>
+      <field name="model">account.analytic.line</field>
+      <field name="inherit_id" ref="analytic.view_account_analytic_line_form"/>
+      <field name="arch" type="xml">
+          <field name="account_id" position="before">
+              <field name="department_id"/>
+              <field name="section_id"/>
+              <field name="section_child_id"/>
+          </field>
+      </field>
+  </record>
+
+
+  <record model="ir.actions.act_window" id="ligne_budget_tree_view">
+			<field name="name">Ligne de budget</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">crossovered.budget.lines</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+
+		</record>
+
+
+		<menuitem id="budget_line_menu" name="Lignes budgétaires"
+		    parent="account.menu_finance_entries" groups="comafrique_groups.group_control" action="ligne_budget_tree_view" sequence="61"/>
+
+</odoo>

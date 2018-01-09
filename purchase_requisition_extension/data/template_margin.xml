@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+    <!-- Template de mail pour validation de fiche de marge-->
+
+    <record id="email_template_margin" model="mail.template">
+            <field name="name">Notification des fiches de marge</field>
+            <field name="email_from">${(user.email or'')|safe }</field>
+            <field name="email_to">${(object.mail_destination or '')|safe}</field>
+            <field name="subject">Fiche de marge - ${object.number}</field>
+            <!-- <field name="email_recipients">${object.user_id.id}</field> -->
+            <field name="model_id" ref="purchase_requisition_extension.model_purchase_request_margin"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="body_html"><![CDATA[
+            <p>Cher Mr/Mme,</p>
+			<p>La validation de la fiche de marge dont les références figurent ci-dessous, est à votre niveau. Veuillez en prendre connaissance afin d'effectuer l'action qui vous incombe. </p>
+
+			<div style="width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+		        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+		            <strong style="text-transform:uppercase;">${object.number}</strong></h3>
+		    </div>
+
+			<div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+				<span style="color: #222; margin-bottom: 5px; display: block; ">
+
+					<p><b>Initiateur : </b>${object.employee_id.name}</p>
+					<p><b>Département : </b>${object.department_id.name}</p>
+					<p><b>Fonction : </b>${object.employee_id.job_id.name}</p>
+					<p><b>Référence interne : </b>${object.name}</p>
+					<p><b>Date d'emission : </b>${object.create_date}</p>
+					<p><b>Client : </b>${object.partner_id.name}</p>
+					<p><b>Réf. Commande : </b>${object.order_ref}</p>
+					<p><b>Montant BC (HT) : </b>${object.amount_untaxed}</p>
+					<p><b>Marge (%) : </b>${object.margin_percent}</p>
+
+				</span>
+			</div>
+            <br/>
+            <p>Veuillez cliquer <a href="${object.url_link}">ici</a> pour y accéder</p>
+            <br/>
+			<p>Cordialement.</p>
+            ]]></field>
+        </record>
+
+
+        <!-- Template de mail pour retour de fiche de marge-->
+
+    <record id="email_template_margin_return" model="mail.template">
+            <field name="name">Notification de retour de fiche de marge</field>
+            <field name="email_from">${(user.email or'')|safe }</field>
+            <field name="email_to">${(object.mail_destination or '')|safe}</field>
+            <field name="subject">Retour de fiche de marge - ${object.number}</field>
+            <!-- <field name="email_recipients">${object.user_id.id}</field> -->
+            <field name="model_id" ref="purchase_requisition_extension.model_purchase_request_margin"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="body_html"><![CDATA[
+            <p>Cher Mr/Mme,</p>
+			<p>La fiche de marge dont les références figurent ci-dessous vous a été retournée. Veuillez en prendre connaissance afin d'effectuer l'action qui vous incombe. </p>
+
+			<div style="width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+		        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+		            <strong style="text-transform:uppercase;">${object.number}</strong></h3>
+		    </div>
+
+			<div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+				<span style="color: #222; margin-bottom: 5px; display: block; ">
+
+					<p><b>Initiateur : </b>${object.employee_id.name}</p>
+					<p><b>Département : </b>${object.department_id.name}</p>
+					<p><b>Fonction : </b>${object.employee_id.job_id.name}</p>
+					<p><b>Référence interne : </b>${object.name}</p>
+					<p><b>Date d'emission : </b>${object.create_date}</p>
+					<p><b>Client : </b>${object.partner_id.name}</p>
+					<p><b>Réf. Commande : </b>${object.order_ref}</p>
+					<p><b>Montant BC (HT) : </b>${object.amount_untaxed}</p>
+					<p><b>Marge (%) : </b>${object.margin_percent}</p>
+
+				</span>
+			</div>
+            <br/>
+            <p>Veuillez cliquer <a href="${object.url_link}">ici</a> pour y accéder</p>
+            <br/>
+			<p>Cordialement.</p>
+            ]]></field>
+        </record>
+
+
+        <!--Fiche de marge validée-->
+
+        <record id="email_template_margin_valide" model="mail.template">
+            <field name="name">Fiche de marge validée</field>
+            <field name="email_from">${(user.email or'')|safe }</field>
+            <field name="email_to">${(object.user_id.login or '')|safe}</field>
+            <field name="subject">Fiche de marge validée - ${object.number}</field>
+            <!-- <field name="email_recipients">${object.user_id.id}</field> -->
+            <field name="model_id" ref="purchase_requisition_extension.model_purchase_request_margin"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="body_html"><![CDATA[
+            <p>Cher Mr/Mme,</p>
+			<p>Votre fiche de marge dont les références figurent ci-dessous a été validée. </p>
+
+			<div style="width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+		        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+		            <strong style="text-transform:uppercase;">${object.number}</strong></h3>
+		    </div>
+
+			<div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+				<span style="color: #222; margin-bottom: 5px; display: block; ">
+
+					<p><b>Initiateur : </b>${object.employee_id.name}</p>
+					<p><b>Département : </b>${object.department_id.name}</p>
+					<p><b>Fonction : </b>${object.employee_id.job_id.name}</p>
+					<p><b>Référence interne : </b>${object.name}</p>
+					<p><b>Date d'emission : </b>${object.create_date}</p>
+					<p><b>Client : </b>${object.partner_id.name}</p>
+					<p><b>Réf. Commande : </b>${object.order_ref}</p>
+					<p><b>Montant BC (HT) : </b>${object.amount_untaxed}</p>
+					<p><b>Marge (%) : </b>${object.margin_percent}</p>
+
+				</span>
+			</div>
+            <br/>
+            <p>Veuillez cliquer <a href="${object.url_link}">ici</a> pour y accéder</p>
+            <br/>
+			<p>Cordialement.</p>
+            ]]></field>
+        </record>
+
+
+        <!--Fiche de marge réfusée-->
+
+        <record id="email_template_margin_refus" model="mail.template">
+            <field name="name">Refus de fiche de marge</field>
+            <field name="email_from">${(user.email or'')|safe }</field>
+            <field name="email_to">${(object.user_id.login or '')|safe}</field>
+            <field name="subject">Refus de Fiche de marge - ${object.number}</field>
+            <!-- <field name="email_recipients">${object.user_id.id}</field> -->
+            <field name="model_id" ref="purchase_requisition_extension.model_purchase_request_margin"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="body_html"><![CDATA[
+            <p>Cher Mr/Mme,</p>
+			<p>Votre fiche de marge dont les références figurent ci-dessous a été réfusée. </p>
+
+			<div style="width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+		        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+		            <strong style="text-transform:uppercase;">${object.number}</strong></h3>
+		    </div>
+
+			<div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+				<span style="color: #222; margin-bottom: 5px; display: block; ">
+
+					<p><b>Initiateur : </b>${object.employee_id.name}</p>
+					<p><b>Département : </b>${object.department_id.name}</p>
+					<p><b>Fonction : </b>${object.employee_id.job_id.name}</p>
+					<p><b>Référence interne : </b>${object.name}</p>
+					<p><b>Date d'emission : </b>${object.create_date}</p>
+					<p><b>Client : </b>${object.partner_id.name}</p>
+					<p><b>Réf. Commande : </b>${object.order_ref}</p>
+					<p><b>Montant BC (HT) : </b>${object.amount_untaxed}</p>
+					<p><b>Marge (%) : </b>${object.margin_percent}</p>
+
+				</span>
+			</div>
+            <br/>
+            <p>Veuillez cliquer <a href="${object.url_link}">ici</a> pour y accéder</p>
+            <br/>
+			<p>Cordialement.</p>
+            ]]></field>
+        </record>
+
+
+    </data>
+</openerp>

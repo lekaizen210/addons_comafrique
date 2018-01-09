@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    
+	    <record id="seq_request" model="ir.sequence">
+	    	<field name="name">Besoin</field>
+	    	<field name="code">purchase.request</field>
+	    	<field name="prefix">EXB-</field>
+	    	<field name="padding">4</field>
+	    </record>
+
+		<record id="seq_request_margin" model="ir.sequence">
+	    	<field name="name">Fiche de marge</field>
+	    	<field name="code">purchase.request.margin</field>
+	    	<field name="prefix">FM-</field>
+	    	<field name="padding">4</field>
+	    </record>
+    
+    </data>
+</openerp>

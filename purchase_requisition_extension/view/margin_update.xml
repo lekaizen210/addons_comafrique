@@ -1,0 +1,50 @@
+<odoo>
+
+    <record model="ir.ui.view" id="wizard_margin_update_form_view">
+            <field name="name">wizard.margin.select.form</field>
+            <field name="model">purchase.request.margin.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Add Lines">
+                    <group>
+                        <field name="margin_id" invisible="1"/>
+                        <field name="request_state" invisible="1"/>
+                        <field name="line_ids" nolabel="1" colspan="4">
+                            <tree editable="bottom">
+                                <field name="product_id"/>
+                                <field name="name"/>
+                                <field name="partner_id"/>
+                                <field name="section_id" groups="comafrique_groups.group_budget_viewer"/>
+                                <field name="analytic_account_id"
+                                       domain="[('section_id','=',section_id), ('type','=','normal')]"
+                                       groups="comafrique_groups.group_budget_viewer"/>
+                                <field name="sous_section_id"
+                                       domain="[('section_id','=',section_id), ('type','=','section')]"
+                                       groups="comafrique_groups.group_budget_viewer"/>
+                                <field name="quantity"/>
+                                <field name="price_unit"/>
+
+                            </tree>
+
+                        </field>
+                    </group>
+                    <footer>
+                       <button name="update_margin_lines" type="object"
+                               string="Enregistrer" class="oe_highlight"/>
+
+                       <button special="cancel" string="Annuler"/>
+                  </footer>
+
+                </form>
+            </field>
+        </record>
+
+        <act_window id="launch_margin_wizard"
+                    name="MAJ Fiche de marge"
+                    src_model="purchase.request.margin"
+                    res_model="purchase.request.margin.wizard"
+                    view_mode="form"
+                    target="new"
+                    key2="client_action_multi"
+                    groups="comafrique_groups.group_control"/>
+
+</odoo>

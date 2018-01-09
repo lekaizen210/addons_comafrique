@@ -1,0 +1,49 @@
+<!-- Seuil de marge -->
+		
+		<record id="margin_limit_tree_view" model="ir.ui.view">
+			<field name="name">purchase.request.margin.limit.tree</field>
+			<field name="model">purchase.request.margin.limit</field>
+			<field name="remote">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Nature">
+					<field name="margin"/>
+					<field name="apply" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="margin_limit_form_view" model="ir.ui.view">
+			<field name="name">purchase.request.margin.limit.form</field>
+			<field name="model">purchase.request.margin.limit</field>
+			<field name="priority" eval="8" />
+			<field name="arch" type="xml">
+				<form string="Nature" version="7.0">
+					<sheet>
+						<group colspan="4" col="4">
+							<field name="margin"/>
+							<field name="apply" />
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="margin_limit_search_view" model="ir.ui.view">
+			<field name="name">purchase.request.margin.limit.search</field>
+			<field name="model">purchase.request.margin.limit</field>
+			<field name="arch" type="xml">
+				<search string="Search">
+					<field name="margin"/>
+					<field name="apply" />
+
+				</search>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="action_margin_limit_tree_view">
+			<field name="name">Accès distant</field>
+			<field name="remote">ir.actions.act_window</field>
+			<field name="res_model">purchase.request.margin.limit</field>
+			<field name="view_remote">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>

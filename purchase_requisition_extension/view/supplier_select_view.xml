@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    
+    	<record model="ir.ui.view" id="wizard_supplier_select_form_view">
+            <field name="name">wizard.supplier.select.form</field>
+            <field name="model">purchase.request.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Add Lines">
+                    <group>
+                        <field name="request_id" invisible="1"/>
+                        <field name="request_state" invisible="1"/>
+                        <field name="line_ids" nolabel="1" attrs="{'readonly': [('request_state','!=','administration')]}" colspan="4">
+                            <tree editable="bottom">
+                                <field name="product_id" readonly="0"/>
+                                <field name="request_line_id" invisible="1"/>
+                                <field name="name" readonly="1"/>
+                                <field name="partner_id"/>
+                            </tree>
+
+                        </field>
+                    </group>
+                    <footer>
+                       <button name="update_supplier" type="object"
+                               string="Enregistrer" class="oe_highlight"/>
+                       
+                       <button special="cancel" string="Annuler"/>
+                  </footer>
+                    
+                </form>
+            </field>
+        </record>
+
+        <act_window id="launch_request_wizard"
+                    name="MAJ Fournisseurs / Articles"
+                    src_model="purchase.request"
+                    res_model="purchase.request.wizard"
+                    view_mode="form"
+                    target="new"
+                    key2="client_action_multi"/>
+    
+    </data>
+</openerp>

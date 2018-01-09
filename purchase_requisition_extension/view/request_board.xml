@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record model="ir.actions.act_window" id="act_request_report_graph">
+            <field name="name">Graphe des dépenses</field>
+            <field name="res_model">report.purchase.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph</field>
+            <field name="context">{'search_default_section': 1}</field>
+            <field name="view_id"
+                   ref="purchase_requisition_extension.report_request_view_graph"/>
+        </record>
+
+        <record model="ir.actions.act_window" id="act_request_tree_controle">
+            <field name="name">Demandes au Contrôle de gestion</field>
+            <field name="res_model">purchase.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state','=','controle')]</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="act_request_tree_direction">
+            <field name="name">Demandes à la Direction</field>
+            <field name="res_model">purchase.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state','=','direction')]</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="act_purchase_order_tree_direction">
+            <field name="name">Commandes d'achats à la Direction</field>
+            <field name="res_model">purchase.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state','=','direction')]</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="act_request_tree_report">
+            <field name="name">Demandes reportées</field>
+            <field name="res_model">purchase.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('state','=','standby')]</field>
+        </record>
+
+        <record model="ir.ui.view" id="board_request_form">
+            <field name="name">Request Dashboard Form</field>
+            <field name="model">board.board</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Request Dashboard">
+                    <board style="2-1">
+                        <column>
+                            <action
+                                string="Graphe des dépenses"
+                                name="%(act_request_report_graph)d"
+                                height="150"
+                                width="210"/>
+                            <action
+                                string="Demandes au Contrôle de Gestion"
+                                name="%(act_request_tree_controle)d"/>
+                        </column>
+                        <column>
+                            <action
+                                string="Demandes à la Direction"
+                                name="%(act_request_tree_direction)d"/>
+
+                            <action
+                                string="Commandes d'achats à la Direction"
+                                name="%(act_purchase_order_tree_direction)d"/>
+
+                            <action
+                                string="Demandes reportées"
+                                name="%(act_request_tree_report)d"/>
+                        </column>
+                    </board>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="open_board_request">
+          <field name="name">Tableau de bord des dépenses</field>
+          <field name="res_model">board.board</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">form</field>
+          <field name="usage">menu</field>
+          <field name="view_id" ref="board_request_form"/>
+        </record>
+
+        <menuitem
+            name="Tableau de bord des dépenses" parent="purchase_requisition_extension.report_menu_main" sequence="30"
+            action="open_board_request"
+            id="menu_board_request" icon="terp-graph" groups="comafrique_groups.group_budget_viewer"/>
+    </data>
+</odoo>

@@ -1,0 +1,37 @@
+<odoo>
+
+
+    <record model="ir.ui.view" id="margin_inh_form_view">
+        <field name="name">purchase.request.margin.form</field>
+        <field name="model">purchase.request.margin</field>
+        <field name="inherit_id" ref="purchase_requisition_extension.request_margin_form_view"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//button[@name='action_done']" position="after">
+                <button name="action_close" states="done" string="Terminer"
+                    type="object" class="oe_highlight" groups="comafrique_groups.group_control"/>
+
+                <button name="action_open" states="closed" string="Rouvrir la fiche de marge"
+                    type="object" class="oe_highlight" groups="comafrique_groups.group_control"/>
+            </xpath>
+
+            <!--<xpath expr="//field[@name='partner_id']" position="before">-->
+                <!--<field name="sale_id" required="1" attrs="{'readonly': [('state','not in',('draft','controle'))]}"/>-->
+            <!--</xpath>-->
+
+        </field>
+    </record>
+
+
+    <record id="request_margin_search_inh_view" model="ir.ui.view">
+        <field name="name">purchase.request.margin.list.select</field>
+        <field name="model">purchase.request.margin</field>
+        <field name="inherit_id" ref="purchase_requisition_extension.request_margin_search_view"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="sale_id"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

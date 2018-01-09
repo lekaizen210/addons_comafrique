@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    
+    		 <record model="ir.ui.view" id="user_inh_form_view">
+                <field name="name">res.users.form</field>
+                <field name="model">res.users</field>
+                <field name="type">form</field>
+                <field name="inherit_id" ref="base.view_users_form"/>
+                <field name="arch" type="xml">
+                    
+                        <field name="signature" position="after">
+                        	<field name="digital_signature" widget="image"/>
+                        </field>
+              
+                </field>
+            </record>
+    
+    </data>
+</openerp>

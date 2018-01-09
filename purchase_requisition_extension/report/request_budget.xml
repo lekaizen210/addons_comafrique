@@ -1,0 +1,76 @@
+<odoo>
+    <data>
+
+		<!--Affichage des lignes de budgets -->
+
+        <record id="report_request_tree_view" model="ir.ui.view">
+			<field name="name">report.purchase.request.tree</field>
+			<field name="model">report.purchase.request</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Request report" create="false" edit="false" delete="false">
+					<field name="analytic_account_id" />
+					<field name="budget_id" />
+					<field name="section_id" />
+					<field name="section_child_id" />
+					<field name="planned_amount" />
+					<field name="validated_amount" />
+					<field name="remain_amount"/>
+
+				</tree>
+			</field>
+		</record>
+
+		<record id="report_request_search_view" model="ir.ui.view">
+			<field name="name">report.purchase.request.search</field>
+			<field name="model">report.purchase.request</field>
+			<field name="arch" type="xml">
+				<search string="Search">
+					<field name="analytic_account_id" />
+					<field name="budget_id" />
+					<field name="section_id" />
+					<field name="section_child_id" />
+
+					<group expand="0" string="Grouper par...">
+						<filter string="Budget" domain="[]" context="{'group_by':'budget_id'}" />
+						<filter string="Section" name="section" domain="[]" context="{'group_by':'section_id'}" />
+						<filter string="Poste budgétaire" domain="[]" context="{'group_by':'section_child_id'}" />
+					</group>
+				</search>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="report_request_view_graph">
+			<field name="name">report.purchase.request.graph</field>
+			<field name="model">report.purchase.request</field>
+			<field name="arch" type="xml">
+				<graph string="Graph View">
+					<field name="analytic_account_id" />
+					<field name="budget_id" />
+					<field name="section_id" />
+					<field name="section_child_id" />
+					<field name="planned_amount" type="measure"/>
+					<field name="remain_amount" type="measure"/>
+					<field name="validated_amount" type="measure"/>
+				</graph>
+			</field>
+		</record>
+
+        <record model="ir.actions.act_window" id="action_report_request">
+			<field name="name">Rapport de dépenses des comptes mouvementés</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">report.purchase.request</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,pivot,graph</field>
+			<field name="context">{'search_default_section': 1}</field>
+
+		</record>
+
+        <menuitem id="report_menu_main" name="Rapports"
+		    parent="expression_besoin_menu_main" groups="comafrique_groups.group_budget_viewer,comafrique_groups.group_administration" sequence="45"/>
+
+		<menuitem id="report_request_menu" name="Rapport des dépenses" sequence="10"
+		    parent="report_menu_main" action="action_report_request"/>
+
+    </data>
+</odoo>

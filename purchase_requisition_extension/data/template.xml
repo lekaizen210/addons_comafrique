@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    
+    <!-- Template de mail -->
+    
+    <record id="email_template_request" model="mail.template">
+            <field name="name">Notification des expressions de besoin</field>
+            <field name="email_from">${(user.email or'')|safe }</field>
+            <field name="email_to">${(object.mail_destination or '')|safe}</field>
+            <field name="subject">Expression de besoin - ${object.name}</field>
+            <!-- <field name="email_recipients">${object.user_id.id}</field> -->
+            <field name="model_id" ref="purchase_requisition_extension.model_purchase_request"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="body_html"><![CDATA[
+            <p>Cher Mr/Mme,</p>
+			<p>La validation de l'expression de besoin dont les références figurent ci-dessous, est à votre niveau. Veuillez en prendre connaissance afin d'effectuer l'action qui vous incombe. </p>
+			
+			<div style="width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+		        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+		            <strong style="text-transform:uppercase;">${object.name}</strong></h3>
+		    </div>
+			
+			<div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+				<span style="color: #222; margin-bottom: 5px; display: block; ">
+			
+					<p><b>Initiateur : </b>${object.employee_id.name}</p>
+					<p><b>Département : </b>${object.department_id.name}</p>
+					<p><b>Fonction : </b>${object.job_id.name}</p>
+					<p><b>Type de la demande : </b>${object.process_view}</p>
+					<p><b>Date d'emission : </b>${object.date}</p>
+					<p><b>Echéance souhaité : </b>${object.deadline}</p>
+					<p><b>Montant du besoin : </b>${object.amount_total}</p>
+				</span>
+			</div>
+            <br/>
+            <p>Veuillez cliquer <a href="${object.url_link}">ici</a> pour y accéder</p>
+            <br/>
+			<p>Cordialement.</p>
+            ]]></field>
+        </record>
+
+
+        <record id="email_template_request_refus" model="mail.template">
+            <field name="name">Notification de refus</field>
+            <field name="email_from">${(user.email or'')|safe }</field>
+            <field name="email_to">${(object.employee_id.work_email or '')|safe}</field>
+            <field name="subject">Expression de besoin, Refus - ${object.name}</field>
+            <!-- <field name="email_recipients">${object.user_id.id}</field> -->
+            <field name="model_id" ref="purchase_requisition_extension.model_purchase_request"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="body_html"><![CDATA[
+            <p>Cher Mr/Mme,</p>
+			<p>Votre expression de besoin dont les références figurent ci-dessous a été réfusée. </p>
+
+			<div style="width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+		        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+		            <strong style="text-transform:uppercase;">${object.name}</strong></h3>
+		    </div>
+
+			<div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+				<span style="color: #222; margin-bottom: 5px; display: block; ">
+
+					<p><b>Initiateur : </b>${object.employee_id.name}</p>
+					<p><b>Département : </b>${object.department_id.name}</p>
+					<p><b>Fonction : </b>${object.job_id.name}</p>
+					<p><b>Type de la demande : </b>${object.process_view}</p>
+					<p><b>Date d'emission : </b>${object.date}</p>
+					<p><b>Echéance souhaité : </b>${object.deadline}</p>
+					<p><b>Montant du besoin : </b>${object.amount_total}</p>
+				</span>
+			</div>
+            <br/>
+            <p>Veuillez cliquer <a href="${object.url_link}">ici</a> pour y accéder</p>
+            <br/>
+			<p>Cordialement.</p>
+            ]]></field>
+        </record>
+
+
+        <!--Report de la demande-->
+
+        <record id="email_template_request_report" model="mail.template">
+            <field name="name">Notification de report</field>
+            <field name="email_from">${(user.email or'')|safe }</field>
+            <field name="email_to">${(object.employee_id.work_email or '')|safe}</field>
+            <field name="subject">Expression de besoin, Refus - ${object.name}</field>
+            <!-- <field name="email_recipients">${object.user_id.id}</field> -->
+            <field name="model_id" ref="purchase_requisition_extension.model_purchase_request"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="body_html"><![CDATA[
+            <p>Cher Mr/Mme,</p>
+			<p>Votre expression de besoin dont les références figurent ci-dessous a été reportée. </p>
+
+			<div style="width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+		        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+		            <strong style="text-transform:uppercase;">${object.name}</strong></h3>
+		    </div>
+
+			<div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+				<span style="color: #222; margin-bottom: 5px; display: block; ">
+
+					<p><b>Initiateur : </b>${object.employee_id.name}</p>
+					<p><b>Département : </b>${object.department_id.name}</p>
+					<p><b>Fonction : </b>${object.job_id.name}</p>
+					<p><b>Type de la demande : </b>${object.process_view}</p>
+					<p><b>Date d'emission : </b>${object.date}</p>
+					<p><b>Echéance souhaité : </b>${object.deadline}</p>
+					<p><b>Montant du besoin : </b>${object.amount_total}</p>
+				</span>
+			</div>
+            <br/>
+            <p>Veuillez cliquer <a href="${object.url_link}">ici</a> pour y accéder</p>
+            <br/>
+			<p>Cordialement.</p>
+            ]]></field>
+        </record>
+
+
+        <!--Validation Bon de commande-->
+
+        <record id="email_template_purchase_order" model="mail.template">
+            <field name="name">Notification de Bon de Commande</field>
+            <field name="email_from">${(user.email or'')|safe }</field>
+            <field name="email_to">${(object.mail_destination or '')|safe}</field>
+            <field name="subject">Bon de Commande - ${object.name}</field>
+            <!-- <field name="email_recipients">${object.user_id.id}</field> -->
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="body_html"><![CDATA[
+            <p>Cher Mr/Mme,</p>
+			<p>La validation du Bon de Commande dont les références figurent ci-dessous, est à votre niveau. Veuillez en prendre connaissance afin d'effectuer l'action qui vous incombe. </p>
+
+			<div style="width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+		        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+		            <strong style="text-transform:uppercase;">${object.name}</strong></h3>
+		    </div>
+
+			<div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+				<span style="color: #222; margin-bottom: 5px; display: block; ">
+
+					<p><b>Fournisseur : </b>${object.partner_id.name}</p>
+					<p><b>Réf. Fournisseur : </b>${object.partner_ref}</p>
+					<p><b>Date : </b>${object.date_planned}</p>
+					<p><b>Montant TTC : </b>${object.amount_total}</p>
+				</span>
+			</div>
+            <br/>
+            <p>Veuillez cliquer <a href="${object.url_link}">ici</a> pour y accéder</p>
+            <br/>
+			<p>Cordialement.</p>
+            ]]></field>
+        </record>
+
+    
+    </data>
+</openerp>

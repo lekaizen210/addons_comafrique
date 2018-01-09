@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    	<!-- Workflow request-->
+    	<record id="workflow_request" model="workflow">
+    		<field name="name">Expression de besoin</field>
+    		<field name="osv">purchase.request</field>	
+    	</record>
+    	
+    		<!-- Workflow request activities -->
+    		<record id="act_request_draft" model="workflow.activity">
+    			<field name="name">draft</field>
+    			<field name="wkf_id" ref="workflow_request"></field> 
+    			<field name="kind">function</field>
+    			<field name="action">action_draft()</field>
+    			<field name="flow_start">True</field>   		
+    		</record>
+    		
+    		<record id="act_request_department" model="workflow.activity">
+    			<field name="name">department</field>
+    			<field name="wkf_id" ref="workflow_request"></field> 
+    			<field name="kind">function</field>
+    			<field name="action">action_department()</field>   		
+    		</record>
+    		
+    		<record id="act_request_controle" model="workflow.activity">
+    			<field name="name">control</field>
+    			<field name="wkf_id" ref="workflow_request"></field> 
+    			<field name="kind">function</field>
+    			<field name="action">action_control()</field>   		
+    		</record>
+    		
+    		<record id="act_request_direction" model="workflow.activity">
+    			<field name="name">direction</field>
+    			<field name="wkf_id" ref="workflow_request"></field> 
+    			<field name="kind">function</field>
+    			<field name="action">action_direction()</field>   		
+    		</record>
+    		
+    		<record id="act_request_administration" model="workflow.activity">
+    			<field name="name">administration</field>
+    			<field name="wkf_id" ref="workflow_request"></field> 
+    			<field name="kind">function</field>
+    			<field name="action">action_administration()</field>   		
+    		</record>
+    		
+    		<record id="act_request_refus" model="workflow.activity">
+    			<field name="name">refus</field>
+    			<field name="wkf_id" ref="workflow_request"></field> 
+    			<field name="kind">function</field>
+    			<field name="action">action_refus()</field>   		
+    		</record>
+    		
+    		<record id="act_request_standby" model="workflow.activity">
+    			<field name="name">standby</field>
+    			<field name="wkf_id" ref="workflow_request"></field> 
+    			<field name="kind">function</field>
+    			<field name="action">action_standby()</field>   		
+    		</record>
+    		
+    		<record id="act_request_done" model="workflow.activity">
+    			<field name="name">done</field>
+    			<field name="wkf_id" ref="workflow_request"></field> 
+    			<field name="kind">function</field>
+    			<field name="action">action_done()</field>   		
+    		</record>
+    		
+    		
+    	    <!-- Worflow request transition -->
+    	    
+    	    <record id="trans_request_0" model="workflow.transition">
+	            <field name="act_from" ref="act_request_draft"/>
+	            <field name="act_to" ref="act_request_department"/>
+	            <field name="signal">signal_department</field>
+	            <field name="condition">True</field>
+            </record>
+            
+            <record id="trans_request_1" model="workflow.transition">
+	            <field name="act_from" ref="act_request_department"/>
+	            <field name="act_to" ref="act_request_draft"/>
+	            <field name="signal">signal_draft</field>
+	            <field name="condition">True</field>
+            </record>
+            
+            <record id="trans_request_2" model="workflow.transition">
+	            <field name="act_from" ref="act_request_department"/>
+	            <field name="act_to" ref="act_request_refus"/>
+	            <field name="signal">signal_refus</field>
+	            <field name="condition">True</field>
+            </record>
+            
+            <record id="trans_request_3" model="workflow.transition">
+	            <field name="act_from" ref="act_request_department"/>
+	            <field name="act_to" ref="act_request_controle"/>
+	            <field name="signal">signal_controle</field>
+	            <field name="condition">True</field>
+            </record>
+            
+            <record id="trans_request_4" model="workflow.transition">
+	            <field name="act_from" ref="act_request_controle"/>
+	            <field name="act_to" ref="act_request_direction"/>
+	            <field name="signal">signal_direction</field>
+	            <field name="condition">True</field>
+            </record>
+            
+            <record id="trans_request_5" model="workflow.transition">
+	            <field name="act_from" ref="act_request_direction"/>
+	            <field name="act_to" ref="act_request_refus"/>
+	            <field name="signal">signal_refus</field>
+	            <field name="condition">True</field>
+            </record>
+            
+            <record id="trans_request_6" model="workflow.transition">
+	            <field name="act_from" ref="act_request_direction"/>
+	            <field name="act_to" ref="act_request_standby"/>
+	            <field name="signal">signal_standby</field>
+	            <field name="condition">True</field>
+            </record>
+
+			<record id="trans_request_draft_1" model="workflow.transition">
+	            <field name="act_from" ref="act_request_direction"/>
+	            <field name="act_to" ref="act_request_draft"/>
+	            <field name="signal">signal_draft</field>
+	            <field name="condition">True</field>
+            </record>
+            
+            <record id="trans_request_7" model="workflow.transition">
+	            <field name="act_from" ref="act_request_standby"/>
+	            <field name="act_to" ref="act_request_administration"/>
+	            <field name="signal">signal_administration</field>
+	            <field name="condition">True</field>
+            </record>
+            
+            <record id="trans_request_8" model="workflow.transition">
+	            <field name="act_from" ref="act_request_direction"/>
+	            <field name="act_to" ref="act_request_administration"/>
+	            <field name="signal">signal_administration</field>
+	            <field name="condition">True</field>
+            </record>
+            
+             <record id="trans_request_9" model="workflow.transition">
+	            <field name="act_from" ref="act_request_administration"/>
+	            <field name="act_to" ref="act_request_done"/>
+	            <field name="signal">signal_done</field>
+	            <field name="condition">True</field>
+            </record>
+
+			<record id="trans_request_draft_2" model="workflow.transition">
+	            <field name="act_from" ref="act_request_administration"/>
+	            <field name="act_to" ref="act_request_draft"/>
+	            <field name="signal">signal_draft</field>
+	            <field name="condition">True</field>
+            </record>
+            
+            
+    </data>
+</openerp>

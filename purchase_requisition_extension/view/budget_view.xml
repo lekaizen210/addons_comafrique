@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    
+    <record id="request_budget_tree_view" model="ir.ui.view">
+			<field name="name">purchase.request.budget.tree</field>
+			<field name="model">purchase.request.budget</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<!--<tree string="Request budget" create="false" delete="false" copy="false" edit="false">-->
+				<tree string="Request budget">
+					<field name="request_id" />
+					<field name="budget_id" />
+					<field name="analytic_account_id" />
+					<field name="invoice_id" />
+					<field name="amount" sum="Somme des engagements"/>
+					<field name="planned_amount" invisible="1"/>
+					<field name="process" />
+					<field name="state" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="request_budget_form_view" model="ir.ui.view">
+			<field name="name">purchase.request.budget.form</field>
+			<field name="model">purchase.request.budget</field>
+			<field name="priority" eval="8" />
+			<field name="arch" type="xml">
+				<form create="false" delete="false" copy="false" edit="false">
+					<header>
+						<field name="state" widget="statusbar"/>
+					</header>
+					<sheet>
+						<group colspan="4" col="4">
+							<field name="request_id" />
+							<field name="analytic_account_id" />
+							<field name="budget_id" />
+							<field name="section_id" />
+							<field name="section_child_id" />
+							<field name="department_id" />
+							<field name="invoice_id" />
+							<field name="amount" />
+							<field name="planned_amount" />
+							<field name="process" />
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="request_budget_search_view" model="ir.ui.view">
+			<field name="name">purchase.request.budget.search</field>
+			<field name="model">purchase.request.budget</field>
+			<field name="arch" type="xml">
+				<search string="Search">
+					<field name="request_id" />
+					<field name="budget_id" />
+					<field name="section_id" />
+					<field name="section_child_id" />
+					<field name="department_id" />
+					<field name="analytic_account_id" />
+					<field name="invoice_id" />
+					<separator />
+					<filter string="A consommer" name="open" domain="[('state','!=','nconsomme')]"
+						help="En attente de consommation" />
+						
+					<filter string="Consommé" name="close" domain="[('state','!=','consomme')]"
+						help="En attente de consommation" />
+
+					<group expand="0" string="Group By...">
+						<filter string="Expression de besoin" domain="[]" context="{'group_by':'request_id'}" />
+						<filter string="Section" domain="[]" context="{'group_by':'section_id'}" />
+						<filter string="Poste budgétaire" domain="[]" context="{'group_by':'section_child_id'}" />
+						<filter string="Compte analytique" domain="[]" context="{'group_by':'analytic_account_id'}" />
+					</group>
+				</search>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="request_budget_view_graph">
+			<field name="name">purchase.request.budget</field>
+			<field name="model">purchase.request.budget</field>
+			<field name="arch" type="xml">
+				<graph string="Graph View">
+					<field name="analytic_account_id"/>
+					<field name="request_id" />
+					<field name="budget_id"/>
+					<field name="amount" type="measure"/>
+
+				</graph>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="action_request_budget_tree_view">
+			<field name="name">Budget validé</field>
+			<field name="res_model">purchase.request.budget</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,pivot,graph</field>
+			<field name="context">{}</field>
+		</record>
+		
+		<!--menuitem id="budget_menu_main" name="Budget"
+		    parent="expression_besoin_menu" 
+		    groups="comafrique_groups.group_budget_viewer"/-->
+		    
+		<menuitem id="budget_menu" name="Engagements"
+		    parent="expression_besoin_menu" action="action_request_budget_tree_view" groups="comafrique_groups.group_budget_viewer"/>
+    
+    </data>
+</openerp>

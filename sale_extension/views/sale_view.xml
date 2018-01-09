@@ -1,0 +1,102 @@
+<odoo>
+
+    <record id="act_sale_2_margin" model="ir.actions.act_window">
+       <field name="res_model">purchase.request.margin</field>
+       <field name="view_type">form</field>
+       <field name="name">Fiche de marge</field>
+       <field name="view_mode">tree,form</field>
+       <field name="context">{'search_default_sale_id': [active_id], 'default_sale_id': active_id}</field>
+   	</record>
+
+    <record model="ir.ui.view" id="sale_inh_form_view">
+        <field name="name">sale.order.view.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//div[@name='button_box']" name="button_box_inh" position="inside">
+                <button name="%(act_sale_2_margin)d"
+                    type="action"
+                    class="oe_stat_button"
+                    icon="fa-pencil-square-o"
+                    attrs="{'invisible': [('nb_margin', '=', 0)]}">
+                    <field name="nb_margin" widget="statinfo" string="F. Marge"/>
+                </button>
+            </xpath>
+
+		    <xpath expr="//button[@name='action_quotation_send']" position="replace">
+                <button name="action_department" string="Soumettre au Chef de Département" type="object" states="draft" class="btn-primary"/>
+                <button name="action_validate" string="Valider le Devis" type="object" states="department" class="btn-primary" groups="comafrique_groups.group_departement"/>
+                <button name="action_quotation_send" string="Send by Email" type="object" states="validated" class="btn-primary"/>
+                <button name="action_agreement" string="Bon pour accord" type="object" states="validated,sent" class="btn-primary"/>
+
+            </xpath>
+
+            <xpath expr="//button[@class='btn-primary o_sale_confirm']" position="replace">
+                <!--<button name="print_quotation" string="Imprimer" type="object" states="validated" class="btn-primary"/>-->
+            </xpath>
+
+            <xpath expr="//button[@name='print_quotation']" position="replace">
+                <!--<button name="print_quotation" string="Imprimer" type="object" states="validated" class="btn-primary"/>-->
+            </xpath>
+
+            <xpath expr="//button[@name='action_confirm']" position="replace">
+                <button name="action_confirm" states="validated,agreement,sent" string="Confirmer la Vente"
+                        class="o_sale_confirm oe_highlight" type="object" groups="sales_team.group_sale_salesman_all_leads"/>
+
+                <button name="action_return" string="Mettre en brouillon" type="object" states="department,validated,agreement" class="btn-primary"
+                    groups="comafrique_groups.group_departement"/>
+            </xpath>
+
+            <xpath expr="//field[@name='partner_shipping_id']" position="after">
+                <field name="url_link" invisible="1"/>
+                <field name="notify" groups="comafrique_groups.group_control,base.group_system" attrs="{'readonly': [('state','=','done')]}"/>
+                <field name="notify_bpa" invisible="0"/>
+                <field name="mail_destination" invisible="1"/>
+                <field name="mail_destination_bpa" invisible="1"
+                        groups="comafrique_groups.group_direction,comafrique_groups.group_dr_operation,comafrique_groups.group_control,comafrique_groups.group_administration"/>
+            </xpath>
+
+
+            <xpath expr="//field[@name='partner_shipping_id']" position="after">
+                <field name="contact_id" attrs="{'readonly':[('state','in',('sale','done','cancel'))]}" domain="[('parent_id','=',partner_id)]"/>
+                <field name="order_object" attrs="{'readonly':[('state','in',('sale','done','cancel'))]}" required="1"/>
+                <field name="margin_id" attrs="{'readonly':[('state','in',('sale','done','cancel'))]}" required="1" domain="[('state','!=','closed')]"/>
+            </xpath>
+
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="department_id" attrs="{'readonly':[('state','in',('sale','done','cancel'))]}" required="1"/>
+            </xpath>
+
+            <field name="client_order_ref" position="after">
+                <field name="date_relance_bpa" attrs="{'readonly': [('date_relance_bpa','=',False)]}" groups=""/>
+            </field>
+
+            <field name="payment_term_id" position="attributes">
+                <attribute name="required">1</attribute>
+            </field>
+
+            <field name="payment_term_id" position="after">
+                <field name="picking_delay"/>
+                <field name="purchase_delay" string="Delai d'appro." help="Delai d'approvisionnement"/>
+                <field name="garantie"/>
+            </field>
+
+            <field name="validity_date" position="attributes">
+                <attribute name="required">1</attribute>
+                <attribute name="string">Date de validité</attribute>
+            </field>
+
+            <!--<xpath expr="//field[@name='order_line']/tree/field[@name='layout_category_id']" position="attributes">-->
+                <!--<attribute name="required">1</attribute>-->
+            <!--</xpath>-->
+
+            <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']" position="before">
+                <field name="category_id"/>
+                <field name="create_uid" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>

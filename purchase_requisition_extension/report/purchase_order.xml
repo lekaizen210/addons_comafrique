@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+		<record id="report_purchase_order_inh_document" model="ir.ui.view">
+			<field name="name">purchase.report_purchaseorder_document</field>
+			<field name="inherit_id" ref="purchase.report_purchaseorder_document" />
+			<field eval="10" name="priority" />
+			<field name="type">qweb</field>
+			<field name="arch" type="xml">
+				<data>
+					<xpath expr="//p[@t-field='o.notes']" position="before">
+			            <p>
+
+			                <strong><u>Service Qualité &#38; Logistique</u></strong><br/>
+			                <!--<td style="width: 25%"><img t-if="o.direction_user_id.digital_signature" t-att-src="'data:image/png;base64,%s' % o.direction_user_id.digital_signature" style="height: 30px; width: 160px;"/></td>-->
+			            </p>
+
+						<p>
+							<br/><br/><br/>
+			                <strong><u>Direction Générale</u></strong><br/>
+			                <!--<td style="width: 25%"><img t-if="o.direction_user_id.digital_signature" t-att-src="'data:image/png;base64,%s' % o.direction_user_id.digital_signature" style="height: 30px; width: 160px;"/></td>-->
+							<br/><br/><br/><br/>
+			            </p>
+					</xpath>
+
+
+					<xpath expr="//div[@t-if='o.date_order']" position="before">
+						<div t-if="o.date_order" class="col-xs-3">
+							<strong>Réf. Exp. Besoin :</strong>
+							<p t-field="o.request_ref"/>
+						</div>
+					</xpath>
+					<xpath expr="//div[@t-if='o.date_order']" position="after">
+			            <div t-if="o.date_order" class="col-xs-3">
+							<strong>Date prévue :</strong>
+							<p t-field="o.date_planned"/>
+						</div>
+					</xpath>
+				</data>
+			</field>
+		</record>
+	</data>
+</odoo>

@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+	<record id="act_request_2_purchase" model="ir.actions.act_window">
+       <field name="res_model">purchase.order</field>
+       <field name="view_type">form</field>
+       <field name="name">Commande fournisseur</field>
+       <field name="view_mode">tree,form</field>
+       <field name="context">{'search_default_request_id': [active_id], 'default_request_id': active_id}</field>
+   	</record>
+
+       <record id="act_request_2_picking" model="ir.actions.act_window">
+       <field name="res_model">stock.picking</field>
+       <field name="view_type">form</field>
+       <field name="name">Livraison</field>
+       <field name="view_mode">tree,form</field>
+       <field name="context">{'search_default_request_id': [active_id], 'default_request_id': active_id}</field>
+   	</record>
+    
+    <record id="request_tree_view" model="ir.ui.view">
+			<field name="name">purchase.request.tree</field>
+			<field name="model">purchase.request</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Request" colors="blue:state in ('department','rh','operation','controle');red:state=='direction';#4BB5C1:state=='administration'">
+					<field name="name" />
+					<field name="employee_id" />
+					<field name="job_id" />
+					<field name="department_id" />
+					<field name="process" />
+					<field name="partner_id" />
+					<field name="date" />
+					<field name="deadline" invisible="1"/>
+					<field name="amount_untaxed" groups="comafrique_groups.group_budget_viewer" invisible="1"/>
+					<field name="amount_total" groups="comafrique_groups.group_budget_viewer"/>
+					<field name="state" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="request_form_view" model="ir.ui.view">
+			<field name="name">purchase.request.form</field>
+			<field name="model">purchase.request</field>
+			<field name="priority" eval="8" />
+			<field name="arch" type="xml">
+				<form string="OpenERP Version 7" version="7.0">
+					<header>
+						<button name="action_department" states="draft" string="Soumettre au Chef de Département"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_user"/>
+
+						<button name="action_control" states="operation" string="Transmettre au Contrôle de Gestion"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_dr_operation"/>
+
+						<button name="action_department" attrs="{'invisible':['|',('state','!=','operation'),('process','=','formation')]}" string="Retourner au Chef de Département"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_control"/>
+
+						<button name="action_rh" attrs="{'invisible':['|',('state','!=','controle'),('process','!=','formation')]}" string="Retourner au RH"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_control"/>
+
+						<button name="action_department" states="rh" string="Retourner au Chef de Département"
+						type="object" class="oe_highlight" groups="hr.group_hr_manager"/>
+
+						<button name="action_department" states="operation" string="Retourner au Chef de Département"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_dr_operation"/>
+
+						<button name="action_dr_operation" states="controle" string="Retourner à la Direction des Opérations"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_control"/>
+						
+						<button name="action_dr_operation" attrs="{'invisible':['|',('state','!=','department'),('process','=','formation')]}" string="Transmettre à la Direction des Opérations"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_departement"/>
+						
+						<button name="action_direction" states="controle" string="Transmettre à la Direction"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_control"/>>
+
+						<button name="check_available_qty" attrs="{'invisible':['|','|',('check_dispo','=',True),('state','!=','controle'),('process','!=','appro')]}" string="Vérifier la disponibilité en stock"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_control"/>
+
+						<button name="action_administration" states="standby,direction" string="Valider"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_direction"/>
+						
+						<button name="action_draft" states="department" string="Mettre en brouillon"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_departement"/>
+
+						<button name="action_rh" attrs="{'invisible':['|',('state','!=','department'),('process','!=','formation')]}" string="Transmettre au RH"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_departement"/>
+
+						<button name="action_dr_operation" attrs="{'invisible':['|',('state','!=','rh'),('process','!=','formation')]}" string="Transmettre à la Direction des Opérations"
+						type="object" class="oe_highlight" groups="hr.group_hr_manager"/>
+
+						<button name="action_draft" states="standby,direction,administration" string="Mettre en brouillon"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_direction"/>
+						
+						<button name="action_refus" states="department" string="Refuser"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_departement"/>
+
+						<button name="action_refus" states="standby,operation" string="Refuser"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_dr_operation"/>
+
+						<button name="action_refus" states="direction" string="Refuser"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_direction"/>
+						
+						<button name="action_standby" states="direction,operation" string="Reporter"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_direction,comafrique_groups.group_dr_operation"/>
+						
+						<button name="action_done" attrs="{'invisible':['|',('stock_dispo','=',True),('state','!=','administration')]}" string="Bon de commande"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_administration"/>
+
+						<button name="action_create_picking" attrs="{'invisible':['|',('stock_dispo','=',False),('state','!=','administration')]}" string="Bon de livraison" type="object"
+						groups="comafrique_groups.group_administration" class="oe_highlight"/>
+
+						<field name="state" widget="statusbar" statusbar_visible="draft"/>
+					</header> 
+					<sheet>
+
+                        <div class="oe_button_box" name="request_button_box">
+                            <button name="%(act_request_2_purchase)d" attrs="{'invisible':[('nb_purchase','&lt;=',0)]}"
+                                class="oe_stat_button"
+                                icon="fa-edit"
+                                type="action"
+                                groups="comafrique_groups.group_budget_viewer,comafrique_groups.group_administration">
+								<field name="nb_purchase" widget="statinfo" string="Commande"/>
+							</button>
+
+                                <button name="%(act_request_2_picking)d" attrs="{'invisible':[('nb_picking','&lt;=',0)]}"
+                                class="oe_stat_button"
+                                icon="fa-truck"
+                                type="action"
+                                groups="comafrique_groups.group_budget_viewer,comafrique_groups.group_administration">
+								<field name="nb_picking" widget="statinfo" string="Livraison(s)"/>
+							</button>
+
+						</div>
+						<h1>
+							<field name="name" readonly="1" placeholder="Expression de besoin"/>
+						</h1>
+						<group>
+							<group>
+								<field name="employee_id" attrs="{'readonly': [('state','in',('direction','administration'))]}"/>
+								<field name="job_id"/>
+								<field name="department_id"/>
+								<field name="date" attrs="{'readonly': [('state','!=','draft')]}"/>
+								<field name="deadline" attrs="{'readonly': [('state','!=','draft')]}"/>
+								<field name="notify" groups="comafrique_groups.group_control,base.group_system"/>
+								<field name="mail_destination" invisible="1"/>
+								<field name="url_link" invisible="1"/>
+								<field name="control_comment" style="color:green; font-weight:bold" groups="comafrique_groups.group_control,comafrique_groups.group_direction"
+										attrs="{'readonly': [('state','!=','controle')]}"/>
+							</group>
+							<group>
+								<field name="process" required="1" />
+								<field name="process_view" invisible="1"/>
+								<field name="request_nature"
+									   attrs="{'readonly': [('state','!=','draft')], 'invisible': [('process','!=','investissement')], 'required': [('process','=','investissement')]}"
+									   domain="[('process','=',process)]"/>
+								<field name="request_type"
+									   string="Type d'investissement"
+									   attrs="{'readonly': [('state','!=','draft')], 'invisible': [('process','!=','investissement')], 'required': [('process','=','investissement')]}"/>
+								<field name="budget_id" attrs="{'readonly': [('state','!=','controle')], 'required': [('state','=','controle'),('process','in',('depense', 'investissement','formation'))], 'invisible': [('process','in',('revente','tiers','appro', False))]}"
+									   groups="comafrique_groups.group_budget_viewer"/>
+								<!--<field name="margin_id" attrs="{'readonly': [('state','not in',('draft','controle'))], 'required': [('state','=','controle'), ('process','=','revente')], 'invisible': [('process','in',('depense', 'investissement', False))]}"/>-->
+								<field name="margin_id" attrs="{'invisible': [('process','not in',('revente', False))], 'required':[('process','=','revente')]}" domain="[('state','=','done')]"/>
+								<field name="order_ref" attrs="{'invisible': [('process','!=','revente')]}"/>
+								<field name="partner_id" attrs="{'invisible': [('process','!=','revente')]}"/>
+								<field name="margin_cost" attrs="{'invisible': [('process','!=','revente')]}"/>
+								<field name="margin_rate" attrs="{'invisible': [('process','!=','revente')]}"/>
+								<field name="analytic_account_id" attrs="{'readonly': [('state','!=','controle')]}"
+									   domain="[('type','=','normal')]" groups="comafrique_groups.group_budget_viewer" invisible="1"/>
+								<field name="analytic_account_ids" widget="many2many_tags" readonly="1" attrs="{'invisible': [('process','=','revente')]}"/>
+								<field name="analytic_account_margin_ids" widget="many2many_tags" readonly="1" attrs="{'invisible': [('process','!=','revente')]}"/>
+								<field name="order_id" attrs="{'invisible': [('order_id','=',False)]}"/>
+								<field name="order_ref" invisible="1"/>
+							</group>
+						</group>
+						<notebook colspan="4">
+							<page string="Détails du besoin">
+								<field name="line_ids" nolabel="1" >
+									<tree editable="bottom">
+										<field name="product_id" attrs="{'readonly': [('state','!=','draft')]}"/>
+										<field name="name" attrs="{'readonly': [('state','!=','draft')]}"/>
+										<field name="partner_id" context="{'search_default_supplier':1, 'default_supplier':1, 'default_customer':0}"
+											   attrs="{'readonly': [('state','!=','draft')]}"/>
+										<field name="section_id" attrs="{'readonly': [('state','!=','controle')], 'required': [('state','=','controle')]}" groups="comafrique_groups.group_budget_viewer"/>
+										<field name="analytic_account_id" attrs="{'readonly': [('state','!=','controle')], 'required': [('state','=','controle')]}"
+											   domain="[('section_id','=',section_id), ('type','=','normal')]"
+											   groups="comafrique_groups.group_budget_viewer"/>
+										<field name="sous_section_id" attrs="{'readonly': [('state','!=','controle')], 'required': [('state','=','controle')]}"
+											   domain="[('section_id','=',section_id), ('type','=','section')]"
+											   groups="comafrique_groups.group_budget_viewer"/>
+
+										<field name="prof" attrs="{'readonly': [('state','!=','draft')]}"/>
+										<field name="proforma" invisible="1"/>
+										<field name="price_unit" attrs="{'readonly': [('state','!=','draft')]}"/>
+										<field name="quantity" attrs="{'readonly': [('state','!=','draft')]}"/>
+										<field name="available_qty" groups="comafrique_groups.group_budget_viewer"/>
+										<field name="tax_id" widget="many2many_tags" string="Taxe" attrs="{'readonly': [('state','!=','draft')]}"/>
+										<field name="subtotal"/>
+										<field name="state" invisible="1"/>
+									</tree>
+									
+								</field>
+								<group class="oe_subtotal_footer oe_right">
+	                                <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+	                                <field name="amount_tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+	                                <div class="oe_subtotal_footer_separator oe_inline">
+	                                    <label for="amount_total"/>
+	                                    <button name="button_dummy"
+	                                        states="draft" string="(update)" type="object" class="oe_edit_only oe_link"/>
+	                                </div>
+	                                <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            	</group>
+                            <div class="oe_clear"/>
+                            <div><label for="justification"/></div>
+							<field name="justification" class="oe_inline" placeholder="Justification..." attrs="{'readonly': [('state','!=','draft')]}"/>
+
+                            
+							</page>
+							<page string="Budget" groups="comafrique_groups.group_budget_viewer" attrs="{'invisible': [('process','not in', ('depense', 'investissement', 'formation'))]}">
+								<group>
+
+									<group string="Rappel du budget" colspan="4">
+										<field name="request_budget_line_ids" nolabel="1">
+											<tree create="false" delete="false" edit="false" colors="red:montant_restant-montant_encours-demande_encours &lt;0;">
+												<field name="section_id" invisible="1"/>
+												<field name="sous_section_id" invisible="1"/>
+												<field name="budget_id" invisible="1"/>
+												<field name="analytic_account_id"/>
+												<field name="request_budget_id" invisible="1"/>
+												<field name="montant_prevu" sum="Total des montants prévus"/>
+												<field name="montant_consomme" sum="Total des montants consommés"/>
+												<field name="montant_engage" sum="Total des montants engagés"/>
+												<field name="montant_restant" sum="Total des montants restants"/>
+												<field name="montant_encours" sum="Total des montants en cours de validation"/>
+												<field name="demande_encours" sum="Total demande en cours"/>
+												<field name="state" invisible="1"/>
+											</tree>
+										</field>
+										<newline/>
+										<div>
+											<button name="onchange_budget_id" type="object" string="Mettre à jour" class="oe_edit_only oe_link" invisible="1"/>
+										</div>
+									</group>
+									<group string="Informations du budget">
+										<field name="allocated_budget"/>
+										<field name="conso"/>
+										<field name="aconso" string="Engagements"/>
+										<field name="conso_ytd"/>
+										<field name="remaining_budget"/>
+									</group>
+									<group string="Dépassement">
+										<field name="state_dep_budget"/>
+									</group>
+									<group string="Contrôle">
+										<field name="receive_date"/>
+									</group>
+
+								</group>
+								<field name="budget_note" placeholder="Observations..." attrs="{'readonly': [('state','!=','controle')]}"/>
+							</page>
+							<page string="Coût" groups="comafrique_groups.group_budget_viewer" attrs="{'invisible': [('process','!=', 'revente')]}">
+								<group>
+
+									<group string="Rappel des Coûts" colspan="4">
+										<div>
+											<!--<button type="object" name="get_rappel_cout" class="oe_edit_only oe_link" string="Rappeler les coûts engagés" attrs="{'invisible': [('state','!=','controle')]}"/>-->
+											<button type="object" name="get_rappel_cout" class="oe_edit_only oe_link" string="Rappeler les coûts engagés" />
+										</div>
+										<field name="commitment_line_ids" nolabel="1">
+											<tree create="false" delete="false" edit="false" colors="red:marge_restante-cout_encours-demande_encours &lt;0;">
+												<field name="section_id" invisible="1"/>
+												<field name="sous_section_id" invisible="1"/>
+												<field name="margin_id" invisible="1"/>
+												<field name="analytic_account_id"/>
+												<field name="order_ref" invisible="1"/>
+												<field name="request_margin_id" invisible="1"/>
+												<field name="cout_prevu" sum="Total des montants prévus"/>
+												<field name="cout_consomme" sum="Total des montants consommés"/>
+												<field name="cout_engage" sum="Total des montants engagés"/>
+												<field name="marge_restante" string="Coût restant"/>
+												<field name="cout_encours" sum="Total des montants en cours de validation" string="En cours val. Direction"/>
+												<field name="demande_encours" sum="Total demande en cours"/>
+												<field name="state" invisible="1"/>
+											</tree>
+										</field>
+										<newline/>
+										<group col="4" colspan="4">
+											<field name="cout_global"/>
+											<field name="cout_engage"/>
+											<field name="marge_restrante"/>
+
+										</group>
+										<button name="onchange_budget_id" type="object" string="Mettre à jour" class="oe_edit_only oe_link" invisible="1"/>
+									</group>
+									<!--<group string="Informations du budget">-->
+										<!--<field name="allocated_budget"/>-->
+										<!--<field name="conso"/>-->
+										<!--<field name="aconso" string="Engagements"/>-->
+										<!--<field name="conso_ytd"/>-->
+										<!--<field name="remaining_budget"/>-->
+									<!--</group>-->
+
+
+								</group>
+							</page>
+							<page string="Validations">
+								<group>
+									<group string="Département">
+										<field name="department_responsible"/>
+										<field name="department_date"/>
+									</group>
+									<group string="Ressources Humaines" attrs="{'invisible':[('process','!=','formation')]}">
+										<field name="rh_responsible"/>
+										<field name="rh_date"/>
+									</group>
+									<group string="Direction des Opérations">
+										<field name="operation_responsible"/>
+										<field name="operation_date"/>
+									</group>
+									<group string="Contrôle de gestion">
+										<field name="budget_responsible"/>
+										<field name="control_date"/>
+									</group>
+									<group string="Direction Générale">
+										<field name="direction_responsible"/>
+										<field name="direction_date"/>
+									</group>
+									<group string="Décision">
+										<field name="decision"/>
+									</group>
+								</group>
+								
+							</page>
+							<page string="Entrepôt" groups="comafrique_groups.group_budget_viewer" attrs="{'invisible':[('stock_dispo','=',False)]}">
+								<group>
+									<group>
+										<field name="location_id"/>
+										<field name="location_dest_id"/>
+									</group>
+									<group>
+										<field name="stock_dispo"/>
+										<field name="check_dispo" invisible="1"/>
+									</group>
+								</group>
+								
+							</page>
+						</notebook>
+					</sheet>
+					<div class="oe_chatter">
+			          <field name="message_follower_ids" widget="mail_followers"/>
+			          <field name="message_ids" widget="mail_thread"/>
+		          	</div>
+				</form>
+			</field>
+		</record>
+
+		<record id="request_search_view" model="ir.ui.view">
+			<field name="name">purchase.request.search</field>
+			<field name="model">purchase.request</field>
+			<field name="arch" type="xml">
+				<search string="Search">
+					<field name="name" />
+					<field name="employee_id" />
+					<field name="job_id" />
+					<field name="department_id" />
+					<field name="request_type" />
+					<field name="date" />
+					<field name="deadline" />
+					<field name="analytic_account_id" />
+					<field name="order_id" />
+					<separator />
+					<filter string="En cours" name="open" domain="[('state','not in',('draft','refus','standby','done'))]"
+						help="Demande en cours" />
+					<filter string="Terminé" name="close" domain="[('state','=','done')]"
+						help="Demande terminée" />
+					<filter string="En attente" name="standby" domain="[('state','=','standby')]"
+						help="Demande en attente" />
+					<filter string="Refusé" name="refus" domain="[('state','=','refus')]"
+						help="Demande refusée" />
+					
+					<group expand="0" string="Grouper par...">
+						<filter string="Employé" domain="[]" context="{'group_by':'employee_id'}" />
+						<filter string="Poste" domain="[]" context="{'group_by':'job_id'}" />
+						<filter string="Département" domain="[]" context="{'group_by':'department_id'}" />
+						<filter string="Nature de demande" domain="[]" context="{'group_by':'request_type'}" />
+						<filter string="Date" domain="[]" context="{'group_by':'date'}" />
+						<filter string="Date d'échéance" domain="[]" context="{'group_by':'deadline'}" />
+						<filter string="Etat" name="state" domain="[]" context="{'group_by':'state'}" />
+					</group>
+				</search>
+			</field>
+		</record>
+		
+		
+		<record model="ir.ui.view" id="request_view_graph">
+			<field name="name">purchase.request</field>
+			<field name="model">purchase.request</field>
+			<field name="arch" type="xml">
+				<graph string="Graph View">
+					<field name="name" />
+					<field name="employee_id"/>
+					<field name="department_id"/>
+					<field name="amount_total" type="measure"/>
+					
+				</graph>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="action_request">
+			<field name="name">Expression de besoin</field>
+			<field name="res_model">purchase.request</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,pivot,graph</field>
+			<field name="help" type="html">
+             	<p class="oe_view_nocontent_create">Exprimez votre premier besoin ici. Ce besoin sera soumis à un processus 
+             	de validation avec des notifications d'alerte mail sur le retour de la demande.</p>
+             </field>
+		</record>
+		
+
+		<!--Menu des profils Achat-->
+		<!--<menuitem id="besoin_achat_menu" name="Expression de besoin"-->
+		    <!--parent="purchase.menu_purchase_root"-->
+		    <!--sequence="0"/>-->
+		    <!-- -->
+		<!--<menuitem id="request_menu" name="Expression de besoin"-->
+		    <!--parent="besoin_achat_menu" action="action_request"/>-->
+
+
+		<!--Menu des utilisateurs-->
+		<menuitem id="expression_besoin_menu_main" name="Besoins" web_icon="purchase_requisition_extension,static/description/icon.png"
+			groups="comafrique_groups.group_user" sequence="10"/>
+
+		<menuitem id="expression_besoin_menu" name="Expression de besoin"
+		    parent="expression_besoin_menu_main"/>
+
+		<menuitem id="expression_besoin" name="Demandes"
+		    parent="expression_besoin_menu" action="action_request" sequence="1"/>
+
+
+		<!-- Type de demande -->
+		
+		<record id="type_tree_view" model="ir.ui.view">
+			<field name="name">purchase.request.type.tree</field>
+			<field name="model">purchase.request.type</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Nature">
+					<field name="name" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="type_form_view" model="ir.ui.view">
+			<field name="name">purchase.request.type.form</field>
+			<field name="model">purchase.request.type</field>
+			<field name="priority" eval="8" />
+			<field name="arch" type="xml">
+				<form string="Nature" version="7.0">
+					<sheet>
+						<group colspan="4" col="4">
+							<field name="name" />
+							<!--field name="account_id" />
+							<field name="post_id" /-->
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="type_search_view" model="ir.ui.view">
+			<field name="name">purchase.request.type.search</field>
+			<field name="model">purchase.request.type</field>
+			<field name="arch" type="xml">
+				<search string="Search">
+					<field name="name" string="Nature de la demande"/>
+					
+				</search>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="action_type_tree_view">
+			<field name="name">Type de demande</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">purchase.request.type</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+
+		</record>
+
+
+		<!-- Nature de la demande -->
+
+		<record id="nature_tree_view" model="ir.ui.view">
+			<field name="name">purchase.request.nature.tree</field>
+			<field name="model">purchase.request.nature</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Nature">
+					<field name="name" />
+					<field name="process" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="nature_form_view" model="ir.ui.view">
+			<field name="name">purchase.request.nature.form</field>
+			<field name="model">purchase.request.nature</field>
+			<field name="priority" eval="8" />
+			<field name="arch" type="xml">
+				<form string="Nature" version="7.0">
+					<sheet>
+						<group colspan="4" col="4">
+							<field name="name" />
+							<field name="process" />
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="nature_search_view" model="ir.ui.view">
+			<field name="name">purchase.request.nature.search</field>
+			<field name="model">purchase.request.nature</field>
+			<field name="arch" type="xml">
+				<search string="Search">
+					<field name="name" string="Nature de la demande"/>
+					<field name="process" />
+				</search>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="action_nature_tree_view">
+			<field name="name">Nature de la demande</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">purchase.request.nature</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+
+		</record>
+
+
+		<menuitem id="config_menu_main" name="Configurations" 
+		    parent="expression_besoin_menu_main" groups="comafrique_groups.group_control,base.group_system" sequence="50"/>
+		    
+		<menuitem id="type_menu" name="Type de demande"
+		    parent="config_menu_main" action="action_type_tree_view"/>
+
+		<menuitem id="nature_menu" name="Nature de demande"
+		    parent="config_menu_main" action="action_nature_tree_view"/>
+
+    
+    </data>
+</openerp>

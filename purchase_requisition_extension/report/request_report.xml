@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+		<!-- Fiche d'engagement des dépenses, éditée à partir des expressions de besoin -->
+
+    		<report id="report_request"
+	            model="purchase.request"        
+	            string="Expression de besoin" 
+	            name="purchase_requisition_extension.report_request_view"
+	            file="purchase_requisition_extension.report_request"
+	            report_type="qweb-pdf"
+				groups="comafrique_groups.group_budget_viewer"/>
+          
+    		
+    		<template id="report_request_view">
+				<t t-call="report.html_container">
+		            <t t-foreach="docs" t-as="o">
+						<div class="header">
+							<style type="text/css">
+								div#company {
+                                     position: relative;
+                                     font-size: 11px; font-family: Arial;
+									 font-family: "Times New Roman", Arial;
+									 border: 1px solid gray;
+                                     border-radius : 8px;
+								     padding-top : 5px;
+									 padding-bottom : 5px;
+		                          	}
+							</style>
+							
+							<div class="col-xs-6">
+								<img t-if="o.create_uid.company_id.logo" t-att-src="'data:image/png;base64,%s' % o.create_uid.company_id.logo" style="height: 70px; width: 200px;"/>
+							</div>
+							
+							<div class="col-xs-6" align="left" id="company">
+								<div><span t-field="o.create_uid.company_id.street"/></div>
+								<div><span t-field="o.create_uid.company_id.zip"/></div>
+								<div><span t-field="o.create_uid.company_id.city"/>
+								<span t-if="o.create_uid.company_id.city!=False">, </span>  
+								<span t-field="o.create_uid.company_id.country_id.name"/></div>
+								<div><span t-field="o.create_uid.company_id.phone"/></div>
+								<div><span t-field="o.create_uid.company_id.email"/></div>
+							</div>
+						</div>
+						
+						<div class="page">
+						
+                        	<style type="text/css">
+								.info_gen table tr td{ border:0; }
+								td{padding: 4px;}
+								div#titre {
+									font-size: 18px;
+									color: #00008B;
+									font-family: "Times New Roman", Arial;
+									}
+
+								div#annee {
+									font-size: 12px;
+									font-family: "Times New Roman", Arial;
+									}
+
+								table {
+									border-collapse: collapse;
+									width: 100%;
+									font-size: 12px;
+									font-family: "Times New Roman", Arial;
+									border-radius: 10px;
+								}
+
+								th {
+									border: 1px solid gray;
+									text-align: center;
+									background-color: #E6ECEB;
+									height: 20px;
+								}
+
+								td {
+									border: 1px solid gray;
+									margin: 0px;
+									padding-left: 5px;
+									padding-right: 5px;
+								}
+								hr {
+									height: 1px;
+									color: #000;
+									background-color: #000;
+								}
+								.table2{
+									display: block;
+									float: left;
+									width: 50%;
+								}
+                          </style>
+							<span style="font-size: 16px;" t-if="o.process != 'investissement'"><b>FICHE D'ENGAGEMENT DE DEPENSES</b></span>
+							<span style="font-size: 16px;" t-if="o.process=='investissement'"><b>DEMANDE D'AUTORISATION D'INVESTISSEMENT</b></span>
+							<div class="info_gen">
+								<table border="0" style="width: 100%; border-top: 1px solid black;">
+									<tr style="width: 100%">
+										<td style="width : 25%; font-size: 11px; font-family: Arial;"><b>N° FICHE :</b></td>
+										<td style="width : 25%; font-size: 12px; font-family: Arial;"><span t-field="o.name"/></td>
+										<td style="width : 25%; font-size: 11px; font-family: Arial;"><b>DATE DE LA DEMANDE :</b> </td>
+										<td style="width : 25%; font-size: 12px; font-family: Arial;"><span t-field="o.date"/></td>
+									</tr>
+									<tr style="width: 100%">
+										<td style="width : 25%; font-size: 11px; font-family: Arial;"><b>INITIATEUR :</b> </td>
+										<td colspan="3" style="width : 75%; font-size: 12px; font-family: Arial;"><span t-field="o.employee_id.name" /></td>
+									</tr>
+									<tr style="width: 100%">
+										<td style="width : 25%; font-size: 11px; font-family: Arial;"><b>FONCTION :</b> </td>
+										<td colspan="3" style="width : 75%; font-size: 12px; font-family: Arial;"><span t-field="o.employee_id.job_id.name"/> </td>
+									</tr>
+									<tr style="width: 100%">
+										<td style="width : 25%; font-size: 11px; font-family: Arial;"><b>DEPARTEMENT :</b> </td>
+										<td colspan="3" style="width : 75%; font-size: 12px; font-family: Arial;"><span t-field="o.department_id.name"/> </td>
+									</tr>
+									<tr style="width: 100%">
+										<td style="width : 25%; font-size: 11px; font-family: Arial;"><b>MONTANT DE LA DEMANDE :</b> </td>
+										<td style="width : 25%; font-size: 12px; font-family: Arial;"><span t-field="o.amount_total"/> </td>
+										<td style="width : 25%; font-size: 11px; font-family: Arial;"><b>DATE D'ECHEANCE :</b> </td>
+										<td style="width : 25%; font-size: 12px; font-family: Arial;"><span t-field="o.deadline"/> </td>
+									</tr>
+								</table>
+							</div>
+							<br/>
+							<table>
+								<tr style="font-size: 13px;">
+									<td t-if="o.process not in ('revente','investissement')"><b>NATURE DE LA DEPENSE</b></td>
+									<td t-if="o.process=='revente'"><b>NATURE DE LA DEMANDE</b></td>
+									<td t-if="o.process != 'investissement'"><b>IMPUTATION ANALYTIQUE</b></td>
+									<td t-if="o.process=='investissement'"><b>NATURE DE L'INVESTISSEMENT</b></td>
+									<td t-if="o.process=='investissement'"><b>TYPE D'INVESTISSEMENTS</b></td>
+								</tr>
+								<tr>
+									<td><span t-field="o.process" /></td>
+									<td t-if="o.process not in ('revente','investissement')"> <div t-foreach="o.analytic_account_ids" t-as="doc">[<span t-field="doc.analytic_account_id.code"/>] <span t-field="doc.analytic_account_id.name"/></div> </td>
+									<td t-if="o.process=='revente'"> <div t-foreach="o.analytic_account_margin_ids" t-as="doc">[<span t-field="doc.analytic_account_id.code"/>] <span t-field="doc.analytic_account_id.name"/></div> </td>
+									<td t-if="o.process=='investissement'"><span t-field="o.request_type"/></td>
+
+								</tr>
+
+
+							</table>
+							<br/>
+							<div class="depense">
+								<span style="font-size: 13px;"><b>DETAIL DE LA DEPENSE</b></span>
+								<table>
+									<tr style="background-color: #E6ECEB; font-weight: bold;">
+										<td style="width: 42%;">Description</td>
+										<td style="width: 28%">Suggestions de Fournitures</td>
+										<td style="width: 7%; text-align: center">Qté</td>
+										<td style="width: 16%; text-align: center">Prix total HT</td>
+										<td style="width: 7%; text-align: center">Prof</td>
+									</tr>
+									<t t-foreach="o.line_ids" t-as="doc">
+										<tr>
+											<td style="width: 42%; font-size: 11px; font-family: Arial;"><span t-field="doc.name"/> </td>
+											<td style="width: 28%; font-size: 11px; font-family: Arial;"><span t-field="doc.partner_id.name"/> </td>
+											<td style="width: 7%; font-size: 11px; font-family: Arial; text-align: center"><span t-field="doc.quantity"/> </td>
+											<td style="width: 16%; font-size: 11px; font-family: Arial; text-align: right"><span t-field="doc.subtotal"/> </td>
+											<td style="width: 7%; font-size: 11px; font-family: Arial; text-align: center"><span t-field="doc.proforma"/> </td>
+										</tr>
+									</t>
+								</table>
+							</div>
+							<br/>
+							<div class="justif">
+								<span style="font-size: 13px;"><b>JUSTIFIFCATION</b></span>
+								<table style="border: 0;">
+									<tr>
+										<td style="width: 100%; min-height: 100px; border: 0; border-top: 1px solid black;"><span t-field="o.justification"/> </td>
+									</tr>
+								</table>
+							</div>
+							<br/>
+							<div class="info_gen">
+								<span style="font-size: 13px;"><b>CONTRÔLE BUDGETAIRE</b></span>
+								<table border="0" style="width: 100%; border-top: 1px solid black;">
+									<tr>
+										<td style="width: 25%; font-size: 10px;">DATE RECEPTION DEMANDE</td>
+										<td colspan="3" style="width: 75%"><span t-field="o.control_date" /></td>
+									</tr>
+									<tr t-if="o.process in ('depense', 'investissement', 'formation')">
+										<td style="width: 25%; font-size: 10px;">BUDGET GLOBAL ALLOUE </td>
+										<td style="width: 25%"><span t-field="o.allocated_budget"/> </td>
+										<td style="width: 25%; font-size: 10px;">CONSO YTD</td>
+										<td style="width: 25%"><span t-field="o.conso_ytd" /></td>
+									</tr>
+									<tr t-if="o.process in ('revente')">
+										<td style="width: 25%; font-size: 10px;">COÛT GLOBAL </td>
+										<td style="width: 25%"><span t-field="o.cout_global"/> </td>
+										<td style="width: 25%; font-size: 10px;">CONSO YTD</td>
+										<td style="width: 25%"><span t-field="o.cout_engage" /></td>
+									</tr>
+									<tr t-if="o.process in ('revente')">
+										<td style="width: 25%; font-size: 10px;">MARGE RESTANTE</td>
+										<td colspan="3" style="width: 75%"><span t-field="o.marge_restrante"/> </td>
+									</tr>
+									<tr>
+										<td style="width: 25%; font-size: 10px;">OBSERVATIONS</td>
+										<td colspan="3" style="width: 75%"><span t-field="o.control_comment"/> </td>
+									</tr>
+								</table>
+							</div>
+							<br/>
+							<span style="font-size: 13px;"><b>APPROBATION</b></span>
+							<div>
+								<table style="font-family: Arial;">
+									<tr style="background-color: #E6ECEB; font-weight: bold; text-align: center; font-size: 10px; ">
+										<!--<td style="width: 25%">INITIATEUR</td>-->
+										<td style="width: 25%">CHEF DE DEPARTEMENT</td>
+										<td style="width: 25%">DIRECTION DES OPERATIONS</td>
+										<td style="width: 25%">CONTROLE DE GESTION</td>
+										<td style="width: 25%">DIRECTION GENERALE</td>
+									</tr>
+									<tr style="font-size: 11px;">
+										<!--<td style="width: 25%"><span t-field="o.employee_id.name"/> </td>-->
+										<td style="width: 25%"><span t-field="o.department_responsible.name"/> </td>
+										<td style="width: 25%"><span t-field="o.operation_responsible.name"/> </td>
+										<td style="width: 25%"><span t-field="o.budget_responsible.name"/> </td>
+										<td style="width: 25%"><span t-field="o.direction_date"/> </td>
+									</tr>
+									<tr style="font-size: 11px;">
+										<!--<td style="width: 25%"><span t-field="o.date"/> </td>-->
+										<td style="width: 25%"><span t-field="o.department_date"/> </td>
+										<td style="width: 25%"><span t-field="o.operation_date"/> </td>
+										<td style="width: 25%"><span t-field="o.control_date"/> </td>
+										<td style="width: 25%"><span t-field="o.decision"/> </td>
+									</tr>
+									<tr>
+										<!--<td style="width: 25%"><img t-if="o.employee_id.user_id.digital_signature" t-att-src="'data:image/png;base64,%s' % o.employee_id.user_id.digital_signature" style="height: 30px; width: 160px;"/></td>-->
+										<td style="width: 25%"><img t-if="o.department_responsible.digital_signature" t-att-src="'data:image/png;base64,%s' % o.department_responsible.digital_signature" style="height: 30px; width: 160px;"/></td>
+										<td style="width: 25%"><img t-if="o.operation_responsible.digital_signature" t-att-src="'data:image/png;base64,%s' % o.department_responsible.digital_signature" style="height: 30px; width: 160px;"/></td>
+										<td style="width: 25%"><img t-if="o.budget_responsible.digital_signature" t-att-src="'data:image/png;base64,%s' % o.budget_responsible.digital_signature" style="height: 30px; width: 160px;"/></td>
+										<td style="width: 25%"><img t-if="o.direction_responsible.digital_signature" t-att-src="'data:image/png;base64,%s' % o.direction_responsible.digital_signature" style="height: 30px; width: 160px;"/></td>
+										
+									</tr>
+								</table>
+							</div>
+							
+                                
+						</div>
+                          
+                          
+                          
+	             	</t>
+	             </t>
+             </template>
+    		
+    		
+    </data>
+</openerp>

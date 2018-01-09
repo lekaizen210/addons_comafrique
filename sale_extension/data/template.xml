@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    
+    <!-- Validation des Devis Clients -->
+    
+    <record id="email_template_quotation" model="mail.template">
+            <field name="name">Soumission des Devis Clients</field>
+            <field name="email_from">${(user.email or'')|safe }</field>
+            <field name="email_to">${(object.mail_destination or '')|safe}</field>
+            <field name="subject">Validation de Devis - ${object.name}</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="body_html"><![CDATA[
+            <p>Cher Mr/Mme,</p>
+			<p>La validation du Devis dont les références figurent ci-dessous, est à votre niveau. Veuillez en prendre connaissance afin d'effectuer l'action qui vous incombe. </p>
+			
+			<div style="width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+		        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+		            <strong style="text-transform:uppercase;">${object.name}</strong></h3>
+		    </div>
+			
+			<div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+				<span style="color: #222; margin-bottom: 5px; display: block; ">
+			
+					<p><b>Client : </b>${object.partner_id.name}</p>
+					<p><b>Interlocuteur : </b>${object.contact_id.name}</p>
+					<p><b>Montant TTC : </b>${object.amount_total}</p>
+					<p><b>Commercial(e) : </b>${object.user_id.name}</p>
+					<p><b>Département : </b>${object.department_id.name}</p>
+					<p><b>Date d'emission : </b>${object.date_order}</p>
+					<p><b>Echéance : </b>${object.validity_date}</p>
+
+				</span>
+			</div>
+            <br/>
+            <p>Veuillez cliquer <a href="${object.url_link}">ici</a> pour y accéder</p>
+            <br/>
+			<p>Cordialement.</p>
+            ]]></field>
+        </record>
+
+
+        <!-- Mise en brouillon de devis client -->
+
+    <record id="email_template_quotation_return" model="mail.template">
+            <field name="name">Notification de retour des Devis Clients</field>
+            <field name="email_from">${(user.email or'')|safe }</field>
+            <field name="email_to">${(object.mail_destination or '')|safe}</field>
+            <field name="subject">Retour de Devis - ${object.name}</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="body_html"><![CDATA[
+            <p>Cher Mr/Mme,</p>
+			<p>Le Devis dont les références figurent ci-dessous, vous a été retourné pour une revue. Veuillez en prendre connaissance afin d'effectuer l'action qui vous incombe. </p>
+
+			<div style="width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+		        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+		            <strong style="text-transform:uppercase;">${object.name}</strong></h3>
+		    </div>
+
+			<div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+				<span style="color: #222; margin-bottom: 5px; display: block; ">
+
+					<p><b>Client : </b>${object.partner_id.name}</p>
+					<p><b>Interlocuteur : </b>${object.contact_id.name}</p>
+					<p><b>Montant TTC : </b>${object.amount_total}</p>
+					<p><b>Commercial(e) : </b>${object.user_id.name}</p>
+					<p><b>Département : </b>${object.department_id.name}</p>
+					<p><b>Date d'emission : </b>${object.date_order}</p>
+					<p><b>Echéance : </b>${object.validity_date}</p>
+
+				</span>
+			</div>
+            <br/>
+            <p>Veuillez cliquer <a href="${object.url_link}">ici</a> pour y accéder</p>
+            <br/>
+			<p>Cordialement.</p>
+            ]]></field>
+        </record>
+
+
+        <!-- Devis Client validé -->
+
+    <record id="email_template_quotation_validated" model="mail.template">
+            <field name="name">Devis Clients validé</field>
+            <field name="email_from">${(user.email or'')|safe }</field>
+            <field name="email_to">${(object.mail_destination or '')|safe}</field>
+            <field name="subject">Devis validé - ${object.name}</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="body_html"><![CDATA[
+            <p>Cher Mr/Mme,</p>
+			<p>Le Devis dont les références figurent ci-dessous a été validé. Veuillez en prendre connaissance afin d'effectuer l'action qui vous incombe. </p>
+
+			<div style="width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+		        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+		            <strong style="text-transform:uppercase;">${object.name}</strong></h3>
+		    </div>
+
+			<div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+				<span style="color: #222; margin-bottom: 5px; display: block; ">
+
+					<p><b>Client : </b>${object.partner_id.name}</p>
+					<p><b>Interlocuteur : </b>${object.contact_id.name}</p>
+					<p><b>Montant TTC : </b>${object.amount_total}</p>
+					<p><b>Commercial(e) : </b>${object.user_id.name}</p>
+					<p><b>Département : </b>${object.department_id.name}</p>
+					<p><b>Date d'emission : </b>${object.date_order}</p>
+					<p><b>Echéance : </b>${object.validity_date}</p>
+
+				</span>
+			</div>
+            <br/>
+            <p>Veuillez cliquer <a href="${object.url_link}">ici</a> pour y accéder</p>
+            <br/>
+			<p>Cordialement.</p>
+            ]]></field>
+        </record>
+
+
+		<!-- Relance Bon Pour Accord -->
+
+    <record id="email_template_bpa" model="mail.template">
+            <field name="name">Relance Bon Pour Accord</field>
+            <field name="email_from">${(user.email or'')|safe }</field>
+            <field name="email_to">${(object.mail_destination_bpa or '')|safe}</field>
+            <field name="subject">Relance BPA - ${object.name}</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">${object.create_uid.lang}</field>
+            <field name="body_html"><![CDATA[
+            <p>Cher Mr/Mme,</p>
+			<p>Le Devis dont les références figurent ci-dessous a fait l'objet d'un Bon Pour Accord il y a plus de 30 jours. </p>
+
+			<div style="width: 375px; margin: 0px; padding: 0px; background-color: #8E0000; border-top-left-radius: 5px 5px; border-top-right-radius: 5px 5px; background-repeat: repeat no-repeat;">
+		        <h3 style="margin: 0px; padding: 2px 14px; font-size: 12px; color: #DDD;">
+		            <strong style="text-transform:uppercase;">${object.name}</strong></h3>
+		    </div>
+
+			<div style="width: 347px; margin: 0px; padding: 5px 14px; line-height: 16px; background-color: #F2F2F2;">
+				<span style="color: #222; margin-bottom: 5px; display: block; ">
+
+					<p><b>Client : </b>${object.partner_id.name}</p>
+					<p><b>Interlocuteur : </b>${object.contact_id.name}</p>
+					<p><b>Montant TTC : </b>${object.amount_total}</p>
+					<p><b>Commercial(e) : </b>${object.user_id.name}</p>
+					<p><b>Département : </b>${object.department_id.name}</p>
+					<p><b>Date d'emission : </b>${object.date_order}</p>
+					<p><b>Echéance : </b>${object.validity_date}</p>
+
+				</span>
+			</div>
+            <br/>
+            <p>Veuillez cliquer <a href="${object.url_link}">ici</a> pour y accéder</p>
+            <br/>
+			<p>Cordialement.</p>
+            ]]></field>
+        </record>
+
+    
+    </data>
+</openerp>

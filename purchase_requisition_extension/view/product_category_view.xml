@@ -1,0 +1,19 @@
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="product_category_inh_form_view">
+                <field name="name">product.category.form.inh</field>
+                <field name="model">product.category</field>
+                <field name="type">form</field>
+                <field name="inherit_id" ref="product.product_category_form_view"/>
+                <field name="arch" type="xml">
+                    <field name="type" position="after">
+                        <field name="code"/>
+                        <field name="note"/>
+                    </field>
+
+                </field>
+            </record>
+
+    </data>
+</odoo>

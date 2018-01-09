@@ -1,0 +1,14 @@
+<odoo>
+
+    <record id="request_search_inh_view" model="ir.ui.view">
+        <field name="name">purchase.request.search</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_requisition_extension.request_search_view"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="margin_id"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,141 @@
+<odoo>
+
+    <!-- Surchage du Devis Client (Rapport imprimable) -->
+
+    <record id="report_inh_saleorder" model="ir.ui.view">
+			<field name="name">sale.report_inh_saleorder</field>
+			<field name="inherit_id" ref="sale.report_saleorder_document" />
+			<field eval="16" name="priority" />
+			<field name="type">qweb</field>
+			<field name="arch" type="xml">
+				<data>
+
+                    <!-- Surchage du corps du devis -->
+
+                    <xpath expr="//div[@class='page']" position="inside">
+                        <div t-if="doc.state in ['draft','sent','department'] " id="background" style="color:lightgrey;
+                                                    font-size:120px;
+                                                    transform:rotate(300deg);
+                                                    -webkit-transform:rotate(300deg);
+                                                    position:absolute;
+                                                    top:120px;
+                                                    opacity:0.5;">
+                              <p id="bg-text">En attente de validation</p>
+                        </div>
+                    </xpath>
+
+                    <xpath expr="//h2" position="after">
+                        <div t-if="doc.order_object" >
+                            <strong>Objet :</strong>
+                            <p t-field="doc.order_object"/>
+                        </div>
+                    </xpath>
+
+                    <xpath expr="//div[@t-if='doc.date_order']" position="replace">
+                        <div t-if="doc.date_order" class="col-xs-3">
+                            <strong t-if="doc.state not in ['draft','sent','department','validated','agreement']">Date de Commande :</strong>
+                            <strong t-if="doc.state in ['draft','sent','department','validated','agreement']">Date du Devis :</strong>
+                            <p t-field="doc.date_order" t-options ='{"format": "dd/MM/yyyy"}'/>
+                        </div>
+
+                        <div t-if="doc.validity_date" class="col-xs-3">
+                            <strong>Date de validité :</strong>
+                            <p t-field="doc.validity_date"/>
+                        </div>
+                    </xpath>
+
+                    <xpath expr="//div[@t-if='doc.user_id.name']" position="replace">
+                        <div t-if="doc.user_id.name" class="col-xs-3">
+                            <strong>Commercial(e) :</strong>
+                            <p t-field="doc.user_id"/>
+                        </div>
+                    </xpath>
+
+                    <!-- Surcharge des ligne de devis -->
+
+					<xpath expr="//t[@t-as='l']" position="replace">
+                        <t t-foreach="layout_category['lines']" t-as="l">
+
+                            <tr t-if="l.layout_category_id.visible and l.layout_category_id.visible==True">
+                                <td><span t-field="l.name"/></td>
+                                <td class="text-right">
+                                    <span t-field="l.product_uom_qty"/>
+                                    <span t-field="l.product_uom" groups="product.group_uom"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="l.price_unit"/>
+                                </td>
+                                <td t-if="display_discount" class="text-right" groups="sale.group_discount_per_so_line">
+                                    <span t-field="l.discount"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_id))"/>
+                                </td>
+                                <td class="text-right" groups="sale.group_show_price_subtotal">
+                                    <span t-field="l.price_subtotal"
+                                        t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                </td>
+                                <td class="text-right" groups="sale.group_show_price_total">
+                                    <span t-field="l.price_total"
+                                        t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                </td>
+                            </tr>
+
+                            <tr t-if="not l.layout_category_id">
+                                <td><span t-field="l.name"/></td>
+                                <td class="text-right">
+                                    <span t-field="l.product_uom_qty"/>
+                                    <span t-field="l.product_uom" groups="product.group_uom"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="l.price_unit"/>
+                                </td>
+                                <td t-if="display_discount" class="text-right" groups="sale.group_discount_per_so_line">
+                                    <span t-field="l.discount"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-esc="', '.join(map(lambda x: (x.description or x.name), l.tax_id))"/>
+                                </td>
+                                <td class="text-right" groups="sale.group_show_price_subtotal">
+                                    <span t-field="l.price_subtotal"
+                                        t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                </td>
+                                <td class="text-right" groups="sale.group_show_price_total">
+                                    <span t-field="l.price_total"
+                                        t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                </td>
+                            </tr>
+                        </t>
+					</xpath>
+
+                    <!-- Surchage de la zone inférieure du devis-->
+
+                    <xpath expr="//div[@t-if='doc.payment_term_id']" position="replace"/>
+
+                    <xpath expr="//p[@t-if='doc.payment_term_id.note']" position="replace">
+                        <br/>
+                        <p t-if="doc.payment_term_id.note">
+                            <strong>Condition de règlement :</strong> <span t-field="doc.payment_term_id.note"/>
+                        </p>
+                        <p t-if="doc.picking_delay">
+                            <strong>Délai d'exécution :</strong> <span t-field="doc.picking_delay"/>
+                        </p>
+                        <p t-if="doc.purchase_delay">
+                            <strong>Délai d'approvisionnement :</strong> <span t-field="doc.purchase_delay"/>
+                        </p>
+                        <p t-if="doc.garantie">
+                            <strong>Garantie :</strong> <span t-field="doc.garantie"/>
+                        </p>
+                        <!--<br/>-->
+                        <!--<p t-if="doc.user_id">-->
+                            <!--<strong>Contacts :</strong> <p t-field="doc.user_id.email"/>-->
+                            <!--<span t-field="doc.user_id.phone"/> <span t-if="doc.user_id.phone and doc.user_id.mobile">|</span>-->
+                            <!--<span t-field="doc.user_id.mobile"/>-->
+                        <!--</p>-->
+                    </xpath>
+
+				</data>
+			</field>
+		</record>
+
+</odoo>

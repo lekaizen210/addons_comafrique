@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    
+    <!--menuitem parent="account_budget.menu_action_account_budget_post_tree"
+            id="menu_act_crossovered_budget_lines_inh_view"
+            action="account_budget.act_crossovered_budget_lines_view" /-->
+    
+    		 <record model="ir.ui.view" id="invoice_supplier_inh_form_view">
+                <field name="name">account.invoice.form</field>
+                <field name="model">account.invoice</field>
+                <field name="type">form</field>
+                <field name="inherit_id" ref="account.invoice_supplier_form"/>
+                <field name="arch" type="xml">
+                
+                	<xpath expr="//button[@name='action_invoice_open']" position="after">
+						
+						<button name="action_depassement_budget_direction" attrs="{'invisible':['|',('autorise_dep_budget','!=',True),('state_dep_budget_direction','=','autorise')]}" string="Autoriser le Dépassement de budget"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_direction"/>
+						
+                	</xpath>
+                
+                    <field name="origin" position="after">
+                    	<field name="request_id"/>
+					</field>
+					
+					<field name="origin" position="replace">
+						<field name="origin" invisible="1"/>
+					</field>
+					
+					<notebook>
+						<page string="Budget" groups="comafrique_groups.group_budget_viewer"
+							  attrs="{'invisible': [('autorise_dep_budget','=',False)]}">
+							<group string="Autorisation de Dépassement">
+								<group>
+									<field name="state_dep_budget_direction" readonly="0"/>
+									<field name="dep_budget_validator_dg_id" readonly="1"/>
+									<field name="date_validation_dg" readonly="1"/>
+								</group>
+								<group>
+									<field name="autorise_dep_budget" invisible="0"/>
+								</group>
+
+							</group>
+						</page>
+					</notebook>
+					
+                </field>
+            </record>
+    
+    </data>
+</openerp>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    
+    	<record model="ir.ui.view" id="wizard_request_group_form_view">
+            <field name="name">wizard.request.group.form</field>
+            <field name="model">purchase.request.group.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Add Lines">
+                    <group col="4" colspan="4">
+                        <field name="supplier_id"/>
+                        <field name="date"/>
+                    </group>
+                    <notebook>
+                        <page string="Demandes">
+                        	<field name="request_ids" domain="[('state','=','administration')]" nolabel="1" />
+                        </page>
+                        
+                    </notebook>
+                    <footer>
+                       <button name="action_group_request" type="object"
+                               string="Générer les commandes" class="oe_highlight"/>
+
+                        <button name="action_group_order" type="object"
+                               string="Générer une commande groupée" class="oe_highlight"/>
+                       
+                       <button special="cancel" string="Annuler"/>
+                  </footer>
+                    
+                </form>
+            </field>
+        </record>
+
+        <act_window id="launch_request_group_wizard"
+                    name="Traitement ExpB. groupé"
+                    src_model="purchase.request"
+                    res_model="purchase.request.group.wizard"
+                    view_mode="form"
+                    target="new"
+                    key2="client_action_multi"/>
+
+        <act_window id="launch_request_order_group_wizard"
+                    name="Commande groupée"
+                    src_model="purchase.request"
+                    res_model="purchase.request.group.wizard"
+                    view_mode="form"
+                    target="new"
+                    key2="client_action_multi"/>
+                    
+         <menuitem id="expression_besoin_groupe" name="Traitement ExpB. groupé"
+		    parent="expression_besoin_menu" action="launch_request_group_wizard" sequence="2"/>
+
+         <menuitem id="commande_groupe" name="Commande groupée"
+		    parent="expression_besoin_menu" action="launch_request_order_group_wizard" sequence="3"/>
+    
+    </data>
+</openerp>

@@ -1,0 +1,426 @@
+<odoo>
+    <data>
+
+		<record id="act_margin_2_request" model="ir.actions.act_window">
+		   <field name="res_model">purchase.request</field>
+		   <field name="view_type">form</field>
+		   <field name="name">Expression de bsoin</field>
+		   <field name="view_mode">tree,form</field>
+		   <field name="context">{'search_default_margin_id': [active_id], 'default_margin_id': active_id}</field>
+		</record>
+
+        <record id="request_margin_tree_view" model="ir.ui.view">
+			<field name="name">purchase.request.margin.tree</field>
+			<field name="model">purchase.request.margin</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Request margin" colors="blue:state in ('department','operation','controle');red:state=='direction'">
+					<field name="number" string="Numéro"/>
+					<field name="partner_id" />
+					<field name="name" />
+					<field name="order_ref" />
+					<field name="proforma_ref" />
+					<field name="employee_id" />
+					<field name="date" />
+					<field name="amount_untaxed" />
+					<field name="margin"/>
+					<field name="margin_percent" />
+					<field name="state" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="request_margin_form_view" model="ir.ui.view">
+			<field name="name">purchase.request.margin.form</field>
+			<field name="model">purchase.request.margin</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Request margin">
+					<header>
+
+						<button name="action_department" states="draft" string="Soumettre au Chef de Département"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_user"/>
+
+						<button name="action_control" states="department" string="Transmettre au Contrôle de Gestion"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_departement"/>
+
+						<button name="action_dr_operation" states="controle" string="Transmettre à la Direction des Opérations"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_control"/>
+
+						<button name="action_done" states="operation" string="Valider"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_dr_operation"/>
+
+						<button name="action_direction" states="operation_dir" string="Transmettre à la Direction"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_dr_operation"/>
+
+						<button name="action_done" states="direction" string="Valider"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_direction"/>
+
+						<button name="action_draft" states="department" string="Mettre en brouillon"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_departement"/>
+
+						<button name="action_department" states="controle" string="Retourner au Chef de Département"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_control"/>
+
+						<button name="action_control" states="operation,operation_dir" string="Retourner au Contrôle de Gestion"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_dr_operation"/>
+
+						<button name="action_dr_operation" states="direction" string="Retourner à la Direction des Opérations"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_direction"/>
+
+						<button name="action_refus" states="direction" string="Refuser"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_direction"/>
+
+						<button name="action_refus" states="operation_dir,operation" string="Refuser"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_dr_operation"/>
+
+						<button name="action_notify" states="direction" string="Notifier"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_control"/>
+
+						<field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+					</header>
+					<sheet>
+
+						<div class="oe_button_box" name="button_box">
+							<button name="%(act_margin_2_request)d"
+								type="action"
+								class="oe_stat_button"
+								icon="fa-pencil-square-o"
+								attrs="{'invisible': [('nb_request', '=', 0)]}">
+								<field name="nb_request" widget="statinfo" string="Ex. Besoin(s)"/>
+							</button>
+						</div>
+
+						<h1>
+							<field name="number" colspan="4" placeholder="Référence interne" attrs="{'readonly': [('state','!=','draft')]}"/>
+						</h1>
+						<group>
+							<group>
+								<field name="employee_id" readonly="0"  attrs="{'readonly': [('state','not in',('draft','controle'))]}"/>
+								<field name="department_id" readonly="0"  attrs="{'readonly': [('state','not in',('draft','controle'))]}"/>
+								<field name="name" attrs="{'readonly': [('state','not in',('draft','controle'))]}"/>
+								<field name="order_ref"  attrs="{'readonly': [('state','not in',('draft','controle'))]}"/>
+								<field name="proforma_ref"  attrs="{'readonly': [('state','not in',('draft','controle'))]}"/>
+								<field name="notify" groups="comafrique_groups.group_control,base.group_system" attrs="{'readonly': [('state','=','done')]}"/>
+								<field name="forcing" groups="comafrique_groups.group_control" attrs="{'readonly': [('state','!=','controle')]}"/>
+								<field name="control_comment" style="color:green; font-weight:bold" groups="comafrique_groups.group_control,comafrique_groups.group_direction"
+										attrs="{'readonly': [('state','!=','controle')]}"/>
+								<field name="user_id" invisible="1"/>
+								<field name="mail_destination" invisible="1"/>
+								<field name="mail_return_destination" invisible="1"/>
+							</group>
+							<group>
+								<field name="partner_id"  attrs="{'readonly': [('state','not in',('draft','controle'))]}" domain="[('customer','=',True)]"/>
+								<field name="amount_untaxed"  attrs="{'readonly': [('state','not in',('draft','controle'))]}"/>
+								<field name="margin_percent" />
+								<field name="margin_limit" groups="comafrique_groups.group_control,comafrique_groups.group_dr_operation" help="Lorsque la valeur de marge est inférieur au seuil la fiche de marge est validée par Direction Générale après la validation de la Direction des Opérations"/>
+								<field name="date"  attrs="{'readonly': [('state','not in',('draft','controle'))]}"/>
+								<field name="create_date"  attrs="{'readonly': [('state','not in',('draft','controle'))]}"/>
+								<field name="url_link" invisible="1"/>
+							</group>
+						</group>
+						<notebook>
+							<page string="Détails">
+								<field name="line_ids" attrs="{'readonly': [('state','not in',('draft','controle'))]}">
+									<tree editable="bottom">
+										<field name="product_id"/>
+										<field name="name"/>
+										<field name="order_ref" invisible="1"/>
+										<field name="partner_id"/>
+										<field name="section_id" groups="comafrique_groups.group_budget_viewer"/>
+										<field name="analytic_account_id"
+											   domain="[('section_id','=',section_id), ('type','=','normal')]"
+											   groups="comafrique_groups.group_budget_viewer"/>
+										<field name="sous_section_id"
+											   domain="[('section_id','=',section_id), ('type','=','section')]"
+											   groups="comafrique_groups.group_budget_viewer"/>
+										<field name="quantity"/>
+										<field name="price_unit"/>
+										<field name="subtotal"/>
+									</tree>
+								</field>
+								<group class="oe_subtotal_footer oe_right">
+	                                <field name="amount_total" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+									<field name="amount_total_order" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+									<field name="margin" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+
+                            </group>
+							</page>
+						</notebook>
+					</sheet>
+					<div class="oe_chatter">
+			          <field name="message_follower_ids" widget="mail_followers"/>
+			          <field name="message_ids" widget="mail_thread"/>
+		          	</div>
+				</form>
+			</field>
+		</record>
+
+
+		<record id="request_margin_search_view" model="ir.ui.view">
+			<field name="name">purchase.request.margin.search</field>
+			<field name="model">purchase.request.margin</field>
+			<field name="arch" type="xml">
+				<search string="Search">
+					<field name="number" string="Numéro"/>
+					<field name="name"/>
+					<field name="order_ref"/>
+					<field name="proforma_ref"/>
+
+					<separator />
+					<filter string="En cours de validation" name="open" domain="[('state','not in',('draft','refus','done'))]"
+						help="Fiche de marge en cours de validation" />
+					<filter string="Validé" name="close" domain="[('state','=','done')]"
+						help="Fiche de marge validée" />
+					<filter string="Refusé" name="refus" domain="[('state','=','refus')]"
+						help="fiche de marge refusée" />
+
+					<group expand="0" string="Grouper par...">
+						<filter string="Employé" domain="[]" context="{'group_by':'employee_id'}" />
+						<filter string="Département" domain="[]" context="{'group_by':'department_id'}" />
+						<filter string="Client" domain="[]" context="{'group_by':'partner_id'}" />
+						<filter string="Date de commande" domain="[]" context="{'group_by':'date'}" />
+						<filter string="Date de création" domain="[]" context="{'group_by':'create_date'}" />
+					</group>
+				</search>
+			</field>
+		</record>
+
+
+        <record model="ir.actions.act_window" id="action_request_margin">
+			<field name="name">Fiche de marge</field>
+			<field name="res_model">purchase.request.margin</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,pivot</field>
+			<field name="help" type="html">
+             	<p class="oe_view_nocontent_create">Créez votre première fiche de marge ici.</p>
+             </field>
+		</record>
+
+
+		<!-- Engagements des achats pour revente-->
+
+		<record id="request_mcommitment_tree_view" model="ir.ui.view">
+			<field name="name">purchase.request.margin.commitment.tree</field>
+			<field name="model">purchase.request.margin.commitment</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<!--<tree string="Request margin commitment" create="false" delete="false" copy="false" edit="false">-->
+				<tree string="Request margin commitment">
+					<field name="request_id" />
+					<field name="margin_id" />
+					<field name="order_ref" />
+					<field name="order_date" />
+					<field name="analytic_account_id" />
+					<field name="amount" sum="Somme des engagements"/>
+					<field name="order_amount" invisible="1"/>
+					<field name="process" />
+					<field name="state" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="request_mcommitment_form_view" model="ir.ui.view">
+			<field name="name">purchase.request.margin.commitment.form</field>
+			<field name="model">purchase.request.margin.commitment</field>
+			<field name="priority" eval="8" />
+			<field name="arch" type="xml">
+				<form create="false" delete="false" copy="false" edit="false">
+					<header>
+						<field name="state" widget="statusbar"/>
+					</header>
+					<sheet>
+						<group colspan="4" col="4">
+							<field name="request_id" />
+							<field name="order_ref" />
+							<field name="margin_id" />
+							<field name="order_date" />
+							<field name="analytic_account_id" />
+							<field name="section_id" />
+							<field name="section_child_id" />
+							<field name="invoice_id" />
+							<field name="amount" />
+							<field name="process" />
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="request_mcommitment_search_view" model="ir.ui.view">
+			<field name="name">purchase.request.margin.commitment.search</field>
+			<field name="model">purchase.request.margin.commitment</field>
+			<field name="arch" type="xml">
+				<search string="Search">
+					<field name="request_id" />
+					<field name="margin_id" />
+					<field name="section_id" />
+					<field name="section_child_id" />
+					<field name="analytic_account_id" />
+					<separator />
+
+					<group expand="0" string="Group By...">
+						<filter string="Expression de besoin" domain="[]" context="{'group_by':'request_id'}" />
+						<filter string="Section" domain="[]" context="{'group_by':'section_id'}" />
+						<filter string="Poste budgétaire" domain="[]" context="{'group_by':'section_child_id'}" />
+						<filter string="Compte analytique" domain="[]" context="{'group_by':'analytic_account_id'}" />
+					</group>
+				</search>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="request_mcommitment_view_graph">
+			<field name="name">purchase.request.margin.commitment.graph</field>
+			<field name="model">purchase.request.margin.commitment</field>
+			<field name="arch" type="xml">
+				<graph string="Graph View">
+					<field name="analytic_account_id"/>
+					<field name="request_id" />
+					<field name="margin_id"/>
+					<field name="amount" type="measure"/>
+
+				</graph>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="action_request_mcommitment">
+			<field name="name">Coût validé</field>
+			<field name="res_model">purchase.request.margin.commitment</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,pivot,graph</field>
+			<field name="context">{}</field>
+		</record>
+
+
+		<menuitem id="request_margin_main_menu" name="Fiche de marge"
+		    parent="expression_besoin_menu_main"
+		  	groups="comafrique_groups.group_administration,comafrique_groups.group_budget_viewer,sales_team.group_sale_salesman"/>
+
+		<menuitem id="request_margin_menu" name="Fiche de marge"
+		    parent="request_margin_main_menu" action="action_request_margin"/>
+
+		<menuitem id="mcommitment_menu" name="Coûts engagés"
+		    parent="request_margin_main_menu" action="action_request_mcommitment"/>
+
+
+		<!-- Catégorie de coûts -->
+
+		<record id="request_category_tree_view" model="ir.ui.view">
+			<field name="name">purchase.request.margin.category.tree</field>
+			<field name="model">purchase.request.margin.category</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Categorie">
+					<field name="name" />
+
+				</tree>
+			</field>
+		</record>
+
+		<record id="request_category_form_view" model="ir.ui.view">
+			<field name="name">purchase.request.margin.category.form</field>
+			<field name="model">purchase.request.margin.category</field>
+			<field name="priority" eval="8" />
+			<field name="arch" type="xml">
+				<form string="Category" version="7.0">
+					<sheet>
+						<group>
+							<field name="name" />
+
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="request_category_search_view" model="ir.ui.view">
+			<field name="name">purchase.request.margin.category.search</field>
+			<field name="model">purchase.request.margin.category</field>
+			<field name="arch" type="xml">
+				<search string="Search">
+					<field name="name" string="Catégorie"/>
+
+				</search>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="action_request_category">
+			<field name="name">Categorie de coût</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">purchase.request.margin.category</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+
+		</record>
+
+
+		<menuitem id="request_category_menu" name="Catégorie de coûts"
+		    parent="config_menu_main" action="action_request_category"/>
+
+
+		<!-- Modèle de coûts -->
+
+		<record id="margin_modele_tree_view" model="ir.ui.view">
+			<field name="name">purchase.request.margin.modele.tree</field>
+			<field name="model">purchase.request.margin.modele</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Modele">
+					<field name="department_id" />
+					<field name="create_date" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="margin_modele_form_view" model="ir.ui.view">
+			<field name="name">purchase.request.margin.modele.form</field>
+			<field name="model">purchase.request.margin.modele</field>
+			<field name="priority" eval="8" />
+			<field name="arch" type="xml">
+				<form string="Modele" version="7.0">
+					<sheet>
+						<group col="4" colspan="4">
+							<field name="department_id" />
+							<field name="create_date" />
+						</group>
+						<notebook>
+							<page string="Détails du modèle">
+								<field name="line_ids" nolabel="1" colspan="4">
+									<tree editable="bottom">
+										<field name="category_id"/>
+										<field name="section_id"/>
+										<field name="analytic_account_id" domain="[('section_id','=',section_id)]"/>
+										<field name="sous_section_id" domain="[('section_id','=',section_id)]"/>
+									</tree>
+								</field>
+							</page>
+						</notebook>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="margin_modele_search_view" model="ir.ui.view">
+			<field name="name">purchase.request.margin.modele.search</field>
+			<field name="model">purchase.request.margin.modele</field>
+			<field name="arch" type="xml">
+				<search string="Search">
+					<field name="department_id"/>
+				</search>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="action_margin_modele">
+			<field name="name">Modèle de coût</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">purchase.request.margin.modele</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+
+		</record>
+
+		<menuitem id="margin_modele_menu" name="modèle de coûts"
+		    parent="config_menu_main" action="action_margin_modele"/>
+
+    </data>
+</odoo>
