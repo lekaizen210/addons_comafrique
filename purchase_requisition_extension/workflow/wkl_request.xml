@@ -15,7 +15,7 @@
     			<field name="action">action_draft()</field>
     			<field name="flow_start">True</field>   		
     		</record>
-    		
+
     		<record id="act_request_department" model="workflow.activity">
     			<field name="name">department</field>
     			<field name="wkf_id" ref="workflow_request"></field> 

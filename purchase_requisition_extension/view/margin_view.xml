@@ -38,8 +38,11 @@
 				<form string="Request margin">
 					<header>
 
-						<button name="action_department" states="draft" string="Soumettre au Chef de Département"
-						type="object" class="oe_highlight" groups="comafrique_groups.group_user"/>
+						<button name="action_responsable_technique" states="draft" string="Soumettre au responsable technique"
+								type="object" class="oe_highlight" groups="comafrique_groups.group_user"/>
+
+						<button name="action_department" states="responsable" string="Soumettre au Chef de Département"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_responsable_technique"/>
 
 						<button name="action_control" states="department" string="Transmettre au Contrôle de Gestion"
 						type="object" class="oe_highlight" groups="comafrique_groups.group_departement"/>

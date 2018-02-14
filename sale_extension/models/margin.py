@@ -8,6 +8,7 @@ class margin(models.Model):
     sale_id = fields.Many2one('sale.order', 'Devis Client')
     state = fields.Selection([
         ('draft','Brouillon'),
+        ('responsable', 'Responsable technique'),
         ('department','Département'),
         ('controle','Contrôle de gestion'),
         ('operation','Direction Opérations'),

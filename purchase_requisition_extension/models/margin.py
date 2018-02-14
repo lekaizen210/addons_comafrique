@@ -252,6 +252,7 @@ class request_margin(models.Model):
     line_ids = fields.One2many('purchase.request.margin.line', 'margin_id', 'Lignes de marge')
     state = fields.Selection([
         ('draft','Brouillon'),
+        ('responsable','Responsable technique'),
         ('department','Département'),
         ('controle','Contrôle de gestion'),
         ('operation','Direction Opérations'),
@@ -267,6 +268,16 @@ class request_margin(models.Model):
     @api.one
     def action_draft(self):
         self.state = 'draft'
+
+    # Méthode du workflow de validation, Responsable technique
+    @api.one
+    def action_responsable_technique(self):
+        if self.state == 'draft':
+            self.send_mail('email_template_margin')
+        else:
+            self.send_mail('email_template_margin_return')
+        self.state = 'responsable'
+        print self.state
 
     #Méthode du workflow de validation, soumission au Chef de Département
     @api.one

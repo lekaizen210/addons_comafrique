@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_magage_budget_line" model="ir.ui.view">
+            <field name="name">view.manage.budget.line</field>
+            <field name="model">manage.budget</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                           <field name="budget"/>
+                           <field name="purchase_request_id" invisible="1"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="write" type="object" string="Valider" class="btn-primary"/>
+                        <button string="Annuler" class="btn-default" special="cancel"/>
+                     </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_manage_budget_line" model="ir.actions.act_window">
+            <field name="name">action.manage.budget.line</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">manage.budget</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_magage_budget_line"/>
+             <field name="target">new</field>
+        </record>
+
+        <menuitem name="Budget"
+          action="action_manage_budget_line"
+          id="menu_manage_budget_line"
+          parent="purchase_requisition_extension.expression_besoin_menu_main"/>
+    </data>
+</odoo>
