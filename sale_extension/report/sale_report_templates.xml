@@ -1,7 +1,5 @@
 <odoo>
 
-    <!-- Surchage du Devis Client (Rapport imprimable) -->
-
     <record id="report_inh_saleorder" model="ir.ui.view">
 			<field name="name">sale.report_inh_saleorder</field>
 			<field name="inherit_id" ref="sale.report_saleorder_document" />
@@ -9,8 +7,6 @@
 			<field name="type">qweb</field>
 			<field name="arch" type="xml">
 				<data>
-
-                    <!-- Surchage du corps du devis -->
 
                     <xpath expr="//div[@class='page']" position="inside">
                         <div t-if="doc.state in ['draft','sent','department'] " id="background" style="color:lightgrey;

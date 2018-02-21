@@ -32,7 +32,6 @@ class requisition(models.Model):
     _order = "name desc"
         
         
-    #Récupération d'information par défaut (à la création) : Employé, Département, Poste
     @api.model
     def default_get(self, fields_list):
         data = models.Model.default_get(self, fields_list)
@@ -45,13 +44,11 @@ class requisition(models.Model):
 
         return data
 
-    #Mise à jour du département et du poste à la selection d'un employé
     @api.onchange('employee_id')
     def onchange_employee_id(self):
         self.department_id = self.employee_id.department_id.id
         self.job_id = self.employee_id.job_id.id
 
-    #Contrôle à la suppression d'une expression de besoin
     @api.multi
     def unlink(self):
         for request in self :
@@ -59,7 +56,6 @@ class requisition(models.Model):
                 raise exceptions.ValidationError(str("Vous ne pouvez pas supprimer ce ducument, veuillez le mettre d'abord en brouillon"))
         return super(requisition, self).unlink()
         
-    #Calcul de totaux
     @api.one
     @api.depends('line_ids')
     def _get_totals(self):
@@ -70,8 +66,6 @@ class requisition(models.Model):
             
         self.amount_total = self.amount_tax + self.amount_untaxed
 
-    #Récupère les informations sur le budget : Budget alloué (allocated_budget),Montant engagé (aconso), Montant consommé (conso)
-    #Somme des engagements et des demandes en cours (conso_ytd),Budget restant (remaining_budget)
     @api.one
     @api.depends('analytic_account_ids', 'budget_id', 'line_ids')
     def _get_budget(self):
@@ -90,7 +84,7 @@ class requisition(models.Model):
             
 
 
-    #Récupère les adresses mail des destinataire à notifier dans le champ fonction "mail_destination" à chaque étape de validation
+    
     @api.one
     def _get_mail_destination(self):
         model_id = False
@@ -122,7 +116,7 @@ class requisition(models.Model):
             
         self.mail_destination = followers
             
-    #Surchage à  la création du bo de livraison
+    
     @api.one
     def action_create_picking(self):
         
@@ -216,7 +210,6 @@ class requisition(models.Model):
 
             self.url_link = '#'
 
-    #Comptage des enregistrements liés à l'expression de besoin : Commande fournisseur (nb_purchase),Livraisons fournisseur (nb_picking)
     @api.one
     def _field_count(self):
         Purchase = self.env['purchase.order']
@@ -227,7 +220,6 @@ class requisition(models.Model):
         picking = Picking.search_count([['request_id','=',self.id]])
         self.nb_picking = picking
 
-    #Vérifie la disponibilité du stock
     @api.one
     @api.depends('line_ids')
     def _get_stock_dispo(self):
@@ -249,7 +241,6 @@ class requisition(models.Model):
 
         self.check_dispo = True
 
-    #Contrôle à la suppression d'une expression de besoin
     @api.multi
     def unlink(self):
         for request in self :
@@ -257,7 +248,6 @@ class requisition(models.Model):
                 raise exceptions.ValidationError(str("Vous ne pouvez pas supprimer ce ducument, veuillez le mettre d'abord en brouillon"))
         return super(requisition, self).unlink()
 
-    #Enregistrement des engagements
     @api.one
     def _create_budget_validate_line(self):
         for line in self.line_ids :
@@ -275,7 +265,6 @@ class requisition(models.Model):
 
         return True
 
-    #Enregistrement des coûts engagés
     @api.one
     def create_margin_validate_line(self):
         for line in self.line_ids :
@@ -289,14 +278,12 @@ class requisition(models.Model):
                                                     'margin_id': self.margin_id.id,
                                                     'amount': line.subtotal,
                                                     })
-            #Mise à jour des coûts engagés
             margin_line_ids = self.env['purchase.request.commitment.line'].search([['analytic_account_id','=', line.analytic_account_id.id], ['margin_id','=',self.margin_id.id]])
             for b_line in margin_line_ids :
                 self._cr.execute('update purchase_request_commitment_line set montant_engage = (select sum(amount) from purchase_request_margin_commitment where analytic_account_id=%s and state=%s) where state not in (%s,%s)', (line.analytic_account_id.id, 'nconsomme', 'administration', 'done',))
 
 
 
-    #Provisionnement des informations de budget pour appréciation à la selection du budget
     @api.onchange('budget_id', 'line_ids')
     def onchange_budget_id(self):
         b_lines = []
@@ -370,7 +357,6 @@ class requisition(models.Model):
         self.margin_rate = self.margin_id.margin_percent
         self.partner_id = self.margin_id.partner_id.id
 
-    #Récupération des processus pour un bon affichage sur le masque de mail
     @api.one
     @api.depends('process')
     def _get_process_view(self):
@@ -493,7 +479,6 @@ class requisition(models.Model):
 	# 	except:
 	# 		return False
 
-    #Fonction d'envoi de mail
     @api.one
     def send_mail(self, email_id, context=None):
         template_id = self.env['ir.model.data'].get_object_reference('purchase_requisition_extension',  email_id)
@@ -510,7 +495,6 @@ class requisition(models.Model):
         # template_id = ir_model_data.get_object_reference('purchase_requisition_extension', 'email_template_request')[1]
         # template_obj.send_mail(template_id = template_id,  res_id = self.id, force_send=True)
     
-    #Méthode du workflow de validation, mise en brouillon
     @api.one
     @api.model
     def action_draft(self):
@@ -525,7 +509,6 @@ class requisition(models.Model):
 
         self.state = 'draft'
         
-    #Méthode du workflow de validation, soumission au Chef de Département
     @api.one
     def action_department(self):
         """if self.amount_total > self.remaining_budget :
@@ -539,7 +522,6 @@ class requisition(models.Model):
         self.state = 'department'
         
         
-    #Méthode du workflow de validation, soumission au RH dans la cas d'une formation de personnel
     @api.one
     def action_rh(self):
         self.department_responsible = self.env.uid
@@ -547,7 +529,6 @@ class requisition(models.Model):
         self.send_mail('email_template_request')
         self.state = 'rh'
 
-    #Méthode du workflow de validation, soumission au Directeur des Opérations
     @api.one
     def action_dr_operation(self):
         if self.state == 'department' :
@@ -559,7 +540,7 @@ class requisition(models.Model):
         self.send_mail('email_template_request')
         self.state = 'operation'
 
-    #Méthode du workflow de validation, soumission au Contrôle de Gestion
+
     @api.one
     def action_control(self):
         self.operation_responsible = self.env.uid
@@ -568,7 +549,6 @@ class requisition(models.Model):
         self.send_mail('email_template_request')
         self.state = 'controle'
         
-    #Méthode du workflow de validation, soumission à la Direction Générale
     @api.one
     def action_direction(self):
         if not self.check_dispo :
@@ -583,7 +563,6 @@ class requisition(models.Model):
         self.send_mail('email_template_request')
         self.state = 'direction'
         
-    #Méthode du workflow de validation,finalisation du processus de l'expression de besoin, génération automatique d'une éventuelle commande fournisseur
     @api.one
     def action_administration(self):
         self.direction_responsible = self.env.uid
@@ -598,14 +577,12 @@ class requisition(models.Model):
         self.send_mail('email_template_request')
         self.state = 'administration'
         
-    #Méthode du workflow de validation, Refus
     @api.one
     def action_refus(self):
         self.send_mail('email_template_request_refus')
         self.decision = 'refus'
         self.state = 'refus'
         
-    #Génération automatique de commande fournisseur
     @api.one
     def action_do_order(self, request_id, rline_ids) :
 
@@ -629,7 +606,6 @@ class requisition(models.Model):
 
         four = {}
 
-        #Fonction de suppression de doublon
         def unique():
             found = set([])
             keep = []
@@ -699,7 +675,6 @@ class requisition(models.Model):
 
         purchase_request.search([['id','=',request_id]]).state = 'done'
 
-    #Méthode du workflow de validation, finalisation
     @api.one
     def action_done(self):
         
@@ -709,14 +684,13 @@ class requisition(models.Model):
             
         #self.state = 'done'
         
-    #Méthode du workflow de validation, report
     @api.one
     def action_standby(self):
         self.send_mail('email_template_request_report')
         self.decision = 'report'
         self.state = 'standby'
         
-    #Sequencement automatique des expression de besoin, à la création
+    
     @api.model
     @api.returns('self', lambda value:value.id)
     def create(self, vals):
@@ -748,7 +722,6 @@ class requisition(models.Model):
     
 
     
-#Détails de l'expression de besoin
 
 class requisition_line(models.Model):
     _name = 'purchase.request.line'
@@ -805,7 +778,6 @@ class requisition_line(models.Model):
         ('done','Terminé'),
          ],    'Etat', select=True, default='draft', track_visibility = 'onchange', related='request_id.state')
 
-#Engagements de l'expression de besoin
 
 class request_validate_budget(models.Model):
     _name = 'purchase.request.budget'
@@ -846,8 +818,6 @@ class request_validate_budget(models.Model):
                                  ('tiers','Achat pour compte de tiers'),
                                  ], 'Type de la demande', select=True, readonly=False, compute = _get_process)
 
-
-#Rappel des engagements sur le formulaire de l'expression de besoin
 
 class request_budget_line(models.Model):
     _name = 'purchase.request.budget.line'

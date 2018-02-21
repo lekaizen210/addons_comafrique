@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api, exceptions
+from openerp import models, fields, api, exceptions
 from datetime import datetime, timedelta
 import time
 from urlparse import urljoin
@@ -136,27 +136,21 @@ class sale_order(models.Model):
         ('cancel', 'Annulé'),
         ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')
 
-    #Soumission au Chef de Département
     @api.one
     def action_department(self):
-        if self.margin_id.state != 'done' :
-            raise exceptions.ValidationError("La fiche de marge liée à ce devis n'a pas encore été validée ! Veuillez finaliser la validation de la fiche de marge avant la soumission de ce devis")
         self.send_mail('email_template_quotation')
         self.state = 'department'
 
-    #Validation du Devis
     @api.one
     def action_validate(self):
         self.send_mail('email_template_quotation_validated')
         self.state = 'validated'
 
-    #Mise en broullon du devis
     @api.one
     def action_return(self):
         self.send_mail('email_template_quotation_return')
         self.state = 'draft'
 
-    #Transformation du Devis en Bon Pour Accord
     @api.one
     def action_agreement(self):
         start = fields.Datetime.from_string(self.date_order)
@@ -174,8 +168,7 @@ class sale_order(models.Model):
     # def check_layout_category(self):
 
 
-    # Cron pour alerte des bons pour accord datant d'une certaine durée.
-    # Créer manuellement le cron au menu Configuration > Technique > Automatisation > Actionq planifiées
+    #Cron pour alerte des bons pour accord datant d'une certaine durée
     @api.model
     def send_bpa_alert(self):
         d= datetime.now().date()
@@ -199,7 +192,6 @@ class sale_order(models.Model):
 
 
 
-# Surchage des lignes de devis
 
 class sale_order_line(models.Model):
     _inherit = 'sale.order.line'

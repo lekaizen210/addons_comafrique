@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record id="account_analytic_upload_from_view" model="ir.ui.view">
+            <field name="name">haccount.analytic.upload.form.view</field>
+            <field name="model">account.analytic.upload</field>
+            <field name="arch" type="xml">
+                <form string="Upload de fichier">
+                    <group col="4">
+                        <field name="account_parent_id"/>
+                        <field name="data_file"/>
+                        <field name="type"/>
+                    </group>
+                    <footer>
+                        <button string="Charger" name="updateLoadFile" type="object" class="btn-primary"/>
+                        <!--<button string="Exporter en Excel" name="export_xls" type="object" class="btn-primary"-->
+                            <!--context="{'xls_export':1}" icon="fa-download"/>-->
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_account_analytic_upload_from" model="ir.actions.act_window">
+            <field name="name">Charger un template</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">account.analytic.upload</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <!-- gestion des upload du budget -->
+        <record id="crossovered_budget_upload_wizard_from_view" model="ir.ui.view">
+            <field name="name">crossovered.budget.upload.wizard.form.view</field>
+            <field name="model">crossovered.budget.upload.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Upload de fichier">
+                    <group col="4">
+                        <field name="file_data" col="2"/>
+                    </group>
+                    <notebook>
+                        <page string="Onglets à charger" name="line">
+                            <field name="line_ids">
+                                <tree editable="top">
+                                    <field name="name"/>
+                                    <field name="active"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <footer>
+                        <button string="Charger" name="updateLoadFile" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_crossovered_budget_upload_wizard_from_view" model="ir.actions.act_window">
+            <field name="name">Charger le budget</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">crossovered.budget.upload.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="crossovered_budget_upload_wizard_from_view"/>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

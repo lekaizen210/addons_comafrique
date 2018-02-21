@@ -61,7 +61,7 @@
             <xpath expr="//field[@name='partner_shipping_id']" position="after">
                 <field name="contact_id" attrs="{'readonly':[('state','in',('sale','done','cancel'))]}" domain="[('parent_id','=',partner_id)]"/>
                 <field name="order_object" attrs="{'readonly':[('state','in',('sale','done','cancel'))]}" required="1"/>
-                <field name="margin_id" attrs="{'readonly':[('state','in',('sale','done','cancel'))]}" required="1" domain="[('state','!=','closed')]"/>
+                <field name="margin_id" attrs="{'readonly':[('state','in',('sale','done','cancel'))]}" required="1"/>
             </xpath>
 
             <xpath expr="//field[@name='user_id']" position="after">

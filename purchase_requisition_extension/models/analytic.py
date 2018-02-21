@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
 
-#Customisatin du plan analytique, rajout de deux axes au-dessus du compte analytique
 
 class AnalyticAccount(models.Model):
     _inherit = "account.analytic.account"

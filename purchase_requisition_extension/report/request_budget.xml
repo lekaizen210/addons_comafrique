@@ -1,8 +1,6 @@
 <odoo>
     <data>
 
-		<!--Affichage des lignes de budgets -->
-
         <record id="report_request_tree_view" model="ir.ui.view">
 			<field name="name">report.purchase.request.tree</field>
 			<field name="model">report.purchase.request</field>

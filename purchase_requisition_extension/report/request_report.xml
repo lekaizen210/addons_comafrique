@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-
-		<!-- Fiche d'engagement des dépenses, éditée à partir des expressions de besoin -->
-
+    
     		<report id="report_request"
 	            model="purchase.request"        
 	            string="Expression de besoin" 

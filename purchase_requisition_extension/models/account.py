@@ -10,7 +10,7 @@ class account_analytic_account(models.Model):
 class account_invoice(models.Model):
     _inherit = 'account.invoice' 
     
-    #Récupérer la référence de l'expression de besoin sur la facture
+    
     @api.one
     @api.depends('name','origin', 'number', 'reference')
     def _get_request_id(self):
@@ -19,7 +19,7 @@ class account_invoice(models.Model):
         if purchase_id :
             self.request_id = purchase_id.request_id.id
         
-
+    
     @api.one
     def _get_autorisation_dep_budget(self):
         
@@ -32,7 +32,6 @@ class account_invoice(models.Model):
             self.autorise_dep_budget = True    
     
         
-    #Fonction de contrôle avant imputation du budget : Compte comptable, poste budgétaire, montant facture par rapport au montant du besoin exprimé
     @api.multi
     def invoice_validate(self):
         res_id = super(account_invoice, self).invoice_validate()
@@ -84,7 +83,6 @@ class account_invoice(models.Model):
          ],    'Dépassement', select=True, readonly=True, default = 'nautorise', track_visibility='onchange')
 
         
-    #Fonction d'autorisation de dépassement de budget
     @api.multi
     def action_depassement_budget_direction(self):
         self.dep_budget_validator_dg_id = self._uid

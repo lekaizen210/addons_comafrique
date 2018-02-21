@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, exceptions
 
-#Paramétrage de l'accès distant. Lorsque le bouton "apply" est coché, toute les alertes mails passent par l'adresse distante au lieu de l'adresse locale
 class remote_access(models.Model) :
     _name = 'purchase.request.remote.access'
     _description = 'Acces distant'
@@ -29,7 +28,6 @@ class remote_access(models.Model) :
                 raise exceptions.ValidationError('Il existe déjà une adresse appliquée par défaut')
 
 
-#Limite de seuile de validation des fichier de marge. Au-delà du seuil, les fiches de marge doivent être validées par la Direction Générale (profil DG)
 class remote_access(models.Model) :
     _name = 'purchase.request.margin.limit'
     _description = 'Seuil de marge'

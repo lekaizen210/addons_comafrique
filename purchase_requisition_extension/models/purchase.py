@@ -2,8 +2,7 @@
 from odoo import models, fields, api, exceptions
 from urlparse import urljoin
 import werkzeug
-
-#Surchage des bons de commandes fournisseurs
+    
 class purchase(models.Model):
     _inherit = 'purchase.order'
 
@@ -87,7 +86,6 @@ class purchase(models.Model):
 
             self.request_ref = temp[0:len(temp)-2]
 
-    #Récupère les adresses mail des destinataire à notifier dans le champ fonction "mail_destination" à chaque étape de validation
     @api.one
     def _get_mail_destination(self):
         model_id = False
@@ -133,7 +131,6 @@ class purchase(models.Model):
         ], string='Status', readonly=True, index=True, copy=False, default='draft', track_visibility='onchange')
 
 
-    #Fonction d'envoi de mail
     @api.one
     def send_mail(self, email_id, context=None):
         template_id = self.env['ir.model.data'].get_object_reference('purchase_requisition_extension',  email_id)
@@ -146,21 +143,18 @@ class purchase(models.Model):
         except:
             return False
 
-    #Méthode du workflow de validation, soumission au Responsable Service Logistique & Qualité (SQL)
     @api.one
     def action_submit(self):
         self._get_mail_destination()
         self.send_mail('email_template_purchase_order')
         self.state = 'submitted'
 
-    #Méthode du workflow de validation, soumission à la Direction Générale
     @api.one
     def action_direction(self):
         self._get_mail_destination()
         self.send_mail('email_template_purchase_order')
         self.state = 'direction'
 
-    #Méthode du workflow de validation, validation de la Direction Générale
     @api.one
     def action_validate(self):
         self.direction_user_id = self._uid
@@ -168,7 +162,6 @@ class purchase(models.Model):
         self.send_mail('email_template_purchase_order')
         self.state = 'validated'
 
-    #Méthode du workflow de validation, confirmation du bon de commande par le Res. SQL ou son Assitant
     @api.one
     def action_confirm_order(self):
         self.state = 'sent'

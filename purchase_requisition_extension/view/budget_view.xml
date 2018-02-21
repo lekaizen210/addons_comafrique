@@ -105,6 +105,17 @@
 		    
 		<menuitem id="budget_menu" name="Engagements"
 		    parent="expression_besoin_menu" action="action_request_budget_tree_view" groups="comafrique_groups.group_budget_viewer"/>
+		<!-- gestion des budgets -->
+		<record id="crossevered_budget_update_inh_form" model="ir.ui.view">
+			<field name="name">crossovered.budget update_form</field>
+			<field name="model">crossovered.budget</field>
+			<field name="inherit_id" ref="account_budget.crossovered_budget_view_form"/>
+			<field name="arch" type="xml">
+				<button name="action_budget_cancel" position="after">
+					<button string="Charger les lignes budgétaires" name="%(action_crossovered_budget_upload_wizard_from_view)d" states="draft" type="action"/>
+				</button>
+			</field>
+		</record>
     
     </data>
 </openerp>

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, tools
 
-#Reporting des expressions de besoin, provisionning tableau de bord
 
 class report_request(models.Model):
     _name='report.purchase.request'

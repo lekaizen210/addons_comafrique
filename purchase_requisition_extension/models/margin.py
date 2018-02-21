@@ -3,7 +3,7 @@ from odoo import models, fields, api, exceptions
 from urlparse import urljoin
 import werkzeug
 
-#Gestion de fiche de marge
+
 class request_margin(models.Model):
     _name = 'purchase.request.margin'
     _description = 'Fiche de marge'
@@ -11,7 +11,7 @@ class request_margin(models.Model):
     _rec_name = 'number'
     _order = "id desc"
 
-    #Récupère les adresses mail des destinataire à notifier dans le champ fonction "mail_destination" à chaque étape de validation
+
     @api.one
     def _get_mail_destination(self):
         model_id = False
@@ -37,7 +37,6 @@ class request_margin(models.Model):
 
         self.mail_destination = followers
 
-    #Récupère les adresses mail des destinataire à notifier en cas de retour pour révision dans le champ fonction "mail_return_destination" à chaque étape de validation
     @api.one
     def _get_return_mail_destination(self):
         model_id = False
@@ -64,7 +63,7 @@ class request_margin(models.Model):
     @api.one
     def _get_url_direct_link(self):
         """
-        	génère l'url pour accéder directement au document en cours à partir du mail de notification envoyé à un utilisateur
+        	génère l'url pour accéder directement au document en cours
         """
         res = {}
         res['view_type'] = 'form'
@@ -92,7 +91,6 @@ class request_margin(models.Model):
 
             self.url_link = '#'
 
-    #Fonction de calcul de totaux : Montant commande Client HT (amount_total_order), Montant de la marge (margin), pourcentage de la marge (margin_percent)
     @api.one
     @api.depends('line_ids', 'amount_untaxed')
     def _get_totals(self):
@@ -108,11 +106,9 @@ class request_margin(models.Model):
         except :
             self.margin_percent = 0
 
-    #Récupère par défaut l'identifant de l'utilisateur connecté
     def default_user_id(self):
         return self._uid
 
-    #Séquencement automatique de la fiche de marge, surchage à la création
     @api.model
     @api.returns('self', lambda value:value.id)
     def create(self, vals):
@@ -121,8 +117,6 @@ class request_margin(models.Model):
 
         return models.Model.create(self, vals)
     
-
-    #Contrôles à la modification de la fiche de marge (surchage de méthode native)
     @api.multi
     def write(self, vals):
         model_id = False
@@ -147,7 +141,6 @@ class request_margin(models.Model):
 
         return super(request_margin, self).write(vals)
 
-    #Contrôle de l'unité de la référence de commande sur une fiche de marge
     @api.constrains('order_ref')
     def _check_order_ref(self):
         if self.order_ref :
@@ -164,7 +157,6 @@ class request_margin(models.Model):
 
         return True
 
-    #Récupération par défaut de l'employé et de son département à la création de la fiche de marge
     @api.model
     def default_get(self, fields_list):
         data = models.Model.default_get(self, fields_list)
@@ -175,7 +167,6 @@ class request_margin(models.Model):
 
         return data
 
-    #Chargement automatique des comptes analytiques rattachés au departement du commercial sur la fiche de marge (au niveau de la grille de détails)
     @api.onchange('department_id')
     def onchange_department_id(self):
         margin_line = []
@@ -195,7 +186,6 @@ class request_margin(models.Model):
 
                 self.line_ids = margin_line
 
-    #Fonction d'envoi de mail
     @api.one
     def send_mail(self, email_id, context=None):
         template_id = self.env['ir.model.data'].get_object_reference('purchase_requisition_extension',  email_id)
@@ -219,7 +209,6 @@ class request_margin(models.Model):
 
         self.margin_limit = limit
 
-    #Comptage du nombre d'expression de besoin liées à une fiche de marge
     @api.one
     def _field_count(self):
         Request = self.env['purchase.request']
@@ -263,12 +252,10 @@ class request_margin(models.Model):
 
     _sql_constraints = [('name_unique', 'UNIQUE(name)', 'Cette référence interne a déjà été saisie')]
 
-    #Méthode du workflow de validation, mise en brouillon
     @api.one
     def action_draft(self):
         self.state = 'draft'
 
-    #Méthode du workflow de validation, soumission au Chef de Département
     @api.one
     def action_department(self):
         if self.state == 'draft' :
@@ -277,7 +264,6 @@ class request_margin(models.Model):
             self.send_mail('email_template_margin_return')
         self.state = 'department'
 
-    #Méthode du workflow de validation, soumission au Contrôle de Gestion
     @api.one
     def action_control(self):
         if self.state == 'department' :
@@ -286,7 +272,6 @@ class request_margin(models.Model):
             self.send_mail('email_template_margin_return')
         self.state = 'controle'
 
-    #Méthode du workflow de validation, soumission au Directeur des Opérations
     @api.one
     def action_dr_operation(self):
         if self.state == 'controle' :
@@ -299,26 +284,22 @@ class request_margin(models.Model):
         else :
             self.state = 'operation'
 
-    #Méthode du workflow de validation, soumission à la Direction Générale
     @api.one
     def action_direction(self):
         self.send_mail('email_template_margin')
 
         self.state = 'direction'
 
-    #Méthode du workflow de validation, validation finale
     @api.one
     def action_done(self):
         self.send_mail('email_template_margin_valide')
         self.state = 'done'
 
-    #Méthode du workflow de validation, refus
     @api.one
     def action_refus(self):
         self.send_mail('email_template_margin_refus')
         self.state = 'refus'
 
-    #Méthode du workflow de validation, notification manuelle
     @api.one
     def action_notify(self):
         self.send_mail('email_template_margin')
@@ -326,7 +307,7 @@ class request_margin(models.Model):
         print 'notification envoyée'
 
 
-#Détails de la fiche de marge
+
 class margin_line(models.Model):
     _name = 'purchase.request.margin.line'
     _description = 'Ligne de marge'
@@ -362,7 +343,7 @@ class margin_line(models.Model):
     def onchange_product_id(self):
         self.name = self.product_id.name
 
-#Coûts engagés de la fiche de marge
+
 class margin_commitment(models.Model):
     _name = 'purchase.request.margin.commitment'
     _rec_name = 'analytic_account_id'
@@ -395,7 +376,6 @@ class margin_commitment(models.Model):
                                  ('tiers','Achat pour compte de tiers'),
                                  ], 'Type de la demande', select=True, readonly=False, compute = _get_process)
 
-#Détail des coûts engagés de la fiche de marge
 class request_budget_line(models.Model):
     _name = 'purchase.request.commitment.line'
     _rec_name = 'analytic_account_id'
@@ -425,7 +405,6 @@ class request_budget_line(models.Model):
         ('done','Terminé'),
          ],    'Etat', select=True, default='draft', track_visibility = 'onchange', related='request_id.state', store = True)
 
-#Surchage des expressions de besoins, contrôles et vérifications des côuts engagés
 class request(models.Model):
     _inherit = 'purchase.request'
 
