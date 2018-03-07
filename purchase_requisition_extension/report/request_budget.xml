@@ -66,9 +66,6 @@
 
 		</record>
 
-        <menuitem id="report_menu_main" name="Rapports"
-		    parent="expression_besoin_menu_main" groups="comafrique_groups.group_budget_viewer,comafrique_groups.group_administration" sequence="45"/>
-
 		<menuitem id="report_request_menu" name="Rapport des dépenses" sequence="10"
 		    parent="report_menu_main" action="action_report_request"/>
 

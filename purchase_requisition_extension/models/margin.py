@@ -3,8 +3,20 @@ from odoo import models, fields, api, exceptions
 from urlparse import urljoin
 import werkzeug
 
-#Gestion de fiche de marge
+
+class resquestTypeFicheMarge(models.Model):
+    """
+    Gestion des types de fiches de marges. Le type de fiche de marge permet de definir les validateurs au niveau techniques
+    """
+    _name = 'request.type.fiche.marge'
+    _description= "Gestion des types de fiches de marge"
+
+    name= fields.Char('Libellé', required=True, size=255)
+    employee_ids= fields.Many2many('res.users', 'type_employee_rel','type_id', 'employee_id', 'Employes', required=True)
+    technique_ids= fields.Many2many('res.users', 'technicien_employee_rel','type_id', 'technicien_id', 'Techniciens', required=True)
+
 class request_margin(models.Model):
+    #Gestion de fiche de marge
     _name = 'purchase.request.margin'
     _description = 'Fiche de marge'
     _inherit = 'mail.thread'
@@ -19,8 +31,11 @@ class request_margin(models.Model):
         ir_model_data = self.env['ir.model.data']
         group_obj = self.env['res.groups']
 
-        if self.state == 'draft' and self.department_id.manager_id and self.department_id.manager_id.user_id :
+        if self.state == 'responsable' and self.department_id.manager_id and self.department_id.manager_id.user_id :
             followers = self.department_id.manager_id.user_id.login
+        elif self.state == 'draft':
+            for tech in self.technicien_ids :
+                followers+= '%s;'%tech.login
         elif self.state == 'department' :
             model_id = ir_model_data.get_object_reference('comafrique_groups', 'group_control')[1]
         elif self.state == 'controle' :
@@ -34,7 +49,7 @@ class request_margin(models.Model):
             group_id = group_obj.browse(model_id)
             for user in group_id.users :
                 followers = '%s;%s' % (user.login, followers)
-
+        print followers
         self.mail_destination = followers
 
     #Récupère les adresses mail des destinataire à notifier en cas de retour pour révision dans le champ fonction "mail_return_destination" à chaque étape de validation
@@ -226,6 +241,16 @@ class request_margin(models.Model):
         request = Request.search_count([['margin_id','=',self.id]])
         self.nb_request = request
 
+    def _get_type_fiche(self):
+        marge_types = self.env['request.type.fiche.marge'].search([])
+        print marge_types
+        for marge in marge_types :
+            user = marge.employee_ids.filtered(lambda r: r.id == self._uid)
+            print user
+            if user :
+                return marge.id
+        return False
+
     create_date = fields.Datetime('Date de création')
     url_link = fields.Char("Lien", compute=_get_url_direct_link)
     nb_request = fields.Integer(compute = _field_count)
@@ -261,6 +286,10 @@ class request_margin(models.Model):
         ('refus','Refusé'),
         ('done','Validé'),
          ],    'Etat', select=True, readonly=True, default = 'draft', track_visibility = 'onchange')
+    type_id= fields.Many2one('request.type.fiche.marge', 'Type de fiche de marge', default=_get_type_fiche, readonly=True)
+    technicien_ids= fields.Many2many('res.users', 'marge_technicien_rel', 'marge_id', 'user_id', 'Techniciens', related='type_id.technique_ids')
+    commentaire_ids= fields.One2many('commentaire.managment', 'res_id', string='Commentaires',
+        domain=lambda self: [('res_model', '=', self._name)], auto_join=True)
 
     _sql_constraints = [('name_unique', 'UNIQUE(name)', 'Cette référence interne a déjà été saisie')]
 
@@ -571,5 +600,3 @@ class request_margin_category(models.Model):
     sous_section_id = fields.Many2one('account.analytic.account', 'Sous-Axe')
     analytic_account_id = fields.Many2one('account.analytic.account', 'Analytique')
     modele_id = fields.Many2one('purchase.request.margin.modele', 'Modèle')
-
-

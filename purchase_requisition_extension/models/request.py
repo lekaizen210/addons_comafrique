@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 from odoo import models, fields, api, exceptions, _
 import time
 from datetime import datetime
@@ -23,7 +23,6 @@ class request_type(models.Model):
                                  ('revente','Achat pour revente'),
                                  ], 'Type de la demande', select=True, readonly=False)
     #type_id = fields.Many2one('purchase.request.type', 'Type de demande', required=True)
-
 
 class requisition(models.Model):
     _name = 'purchase.request'
@@ -302,15 +301,22 @@ class requisition(models.Model):
         b_lines = []
         found = set([])
         keep = []
+        budget_line = False
 
         if self.budget_id :
 
             for line in self.line_ids :
-
                 demande = self.env['purchase.request.line'].search([['analytic_account_id','=',line.analytic_account_id.id]])
-                budget_line = self.env['crossovered.budget.lines'].search([['analytic_account_id','=',line.analytic_account_id.id], ['crossovered_budget_id','=',self.budget_id.id]])
+                if line.analytic_account_id :
+                    budget_line = self.env['crossovered.budget.lines'].search([['analytic_account_id','=',line.analytic_account_id.id], ['crossovered_budget_id','=',self.budget_id.id]])
                 engagements = self.env['purchase.request.budget'].search([['analytic_account_id','=',line.analytic_account_id.id], ['budget_id','=',self.budget_id.id], ['state','=','nconsomme']])
                 request_line_ids = self.env['purchase.request.line'].search([['analytic_account_id','=',line.analytic_account_id.id], ['state','=','direction']])
+
+
+                print budget_line
+                print engagements
+                for eng in engagements :
+                    print eng.amount
 
                 somme_engagement = 0
                 for engagement in engagements :
@@ -321,7 +327,6 @@ class requisition(models.Model):
                     somme_encours += encours.price_unit
 
                 demande_encours = 0
-
                 # Construction d'une liste de compte analytique des lignes de demande sans doublons
                 if line.analytic_account_id.id not in found :
                     found.add(line.analytic_account_id.id)
@@ -337,16 +342,19 @@ class requisition(models.Model):
                         'sous_section_id': line.sous_section_id.id,
                         'budget_id': self.budget_id.id,
                         'analytic_account_id': line.analytic_account_id.id,
-                        'montant_prevu': budget_line.planned_amount,
-                        'montant_consomme': budget_line.practical_amount,
+                        'montant_prevu': 0.0,
+                        'montant_consome': 0.0,
                         'montant_engage': somme_engagement,
                         'montant_encours': somme_encours,
                         'demande_encours': demande_encours,
-                        'montant_restant': budget_line.planned_amount - budget_line.practical_amount - somme_engagement,
-
+                        'montant_restant': 0.0,
                     }
+                    if budget_line :
+                        budget_line_ids['montant_prevu']= budget_line.planned_amount,
+                        budget_line_ids['montant_consomme']= budget_line.practical_amount,
+                        budget_line_ids['montant_restant']= budget_line.planned_amount - budget_line.practical_amount - somme_engagement,
                     b_lines += [budget_line_ids]
-
+            print b_lines
         self.request_budget_line_ids = b_lines
 
 

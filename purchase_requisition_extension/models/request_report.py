@@ -54,11 +54,7 @@ class report_margin(models.Model):
         tools.drop_view_if_exists(self.env.cr, 'report_purchase_margin')
         self.env.cr.execute("""CREATE OR REPLACE VIEW report_purchase_margin AS (
         select
-        distinct min(section_id) as id, order_ref, section_id, order_date,
-        (select distinct amount_untaxed from purchase_request_margin where order_ref=c.order_ref) as cout_global,
-        sum(amount) as cout_engage,
-        ((select distinct amount_untaxed from purchase_request_margin where order_ref=c.order_ref) - sum(amount)) as total_marge,
-        (100-(sum(amount)/(select distinct amount_untaxed from purchase_request_margin where order_ref=c.order_ref))*100) as marge_pourcent
+        distinct min(section_id) as id, order_ref, section_id, order_date
         from purchase_request_margin_commitment c
         group by order_ref, section_id,order_date
                 );
