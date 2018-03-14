@@ -15,7 +15,14 @@
     			<field name="action">action_draft()</field>
     			<field name="flow_start">True</field>   		
     		</record>
-    		
+
+			<record id="act_request_responsable_tech" model="workflow.activity">
+				<field name="name">responsable</field>
+				<field name="wkf_id" ref="workflow_request"></field>
+				<field name="kind">function</field>
+				<field name="action">action_responsable_technique()</field>
+			</record>
+
     		<record id="act_request_department" model="workflow.activity">
     			<field name="name">department</field>
     			<field name="wkf_id" ref="workflow_request"></field> 
@@ -73,6 +80,20 @@
 	            <field name="act_to" ref="act_request_department"/>
 	            <field name="signal">signal_department</field>
 	            <field name="condition">True</field>
+            </record>
+
+            <record id="trans_request_1_1" model="workflow.transition">
+                <field name="act_from" ref="act_request_responsable_tech"/>
+                <field name="act_to" ref="act_request_draft"/>
+                <field name="signal">signal_draft</field>
+                <field name="condition">True</field>
+            </record>
+
+            <record id="trans_request_0_1" model="workflow.transition">
+                <field name="act_from" ref="act_request_responsable_tech"/>
+                <field name="act_to" ref="act_request_department"/>
+                <field name="signal">signal_departement</field>
+                <field name="condition">True</field>
             </record>
             
             <record id="trans_request_1" model="workflow.transition">

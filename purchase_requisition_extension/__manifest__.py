@@ -17,11 +17,12 @@
 
     # any module necessary for this one to work correctly
     'depends': ['base','purchase','account','account_accountant','account_analytic_default',
-                'account_budget', 'hr', 'stock', 'product','comafrique_groups', 'board', 'sales_team'],
+                'account_budget', 'hr', 'stock', 'product','comafrique_groups', 'board', 'sales_team',
+                'commentaire_managment'],
 
     # always loaded
     'data': [
-        #'security/rules.xml',
+        'security/rules.xml',
         'security/ir.model.access.csv',
         'workflow/wkl_request.xml',
         'data/sequence.xml',
@@ -30,7 +31,10 @@
         "wizard/uploadAnalyticWizard.xml",
         'view/request_view.xml',
         'view/purchase_view.xml',
+        'wizard/commentaire_wizard_managment_view.xml',
+        # 'view/request_view.xml',
         # 'view/user_view.xml',
+        # 'view/purchase_view.xml',
         'view/hr_view.xml',
         'view/stock_view.xml',
         'view/product_category_view.xml',
@@ -38,14 +42,14 @@
         'view/account_view.xml',
         'view/analytic.xml',
         'report/request_report.xml',
-        'report/request_budget.xml',
-        'report/request_margin.xml',
+        # 'report/request_budget.xml',
+        # 'report/request_margin.xml',
+        'view/request_board.xml',
         'report/purchase_order.xml',
         'view/margin_view.xml',
         'view/margin_update.xml',
         'view/supplier_select_view.xml',
         'view/req_group_view.xml',
-        'view/request_board.xml',
         'view/margin_board.xml',
         'view/config_view.xml',
     ],

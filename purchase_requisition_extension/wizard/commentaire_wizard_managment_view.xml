@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="commentaire_managment_form_wizrd" model="ir.ui.view">
+            <field name="name">commentaire.management.wizard.form_view</field>
+            <field name="model">commentaire.management.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Gestion des commentaires">
+                    <sheet>
+                        <notebook>
+                            <page string="Commentaire">
+                                <field name="commentaire"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <footer>
+                        <button name="valide_commentaire" string="Valider" type="object" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_commentaire_managment_form_wizard" model="ir.actions.act_window">
+            <field name="name">Commentaires</field>
+			<field name="res_model">commentaire.management.wizard</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+        </record>
+    </data>
+</odoo>

@@ -44,7 +44,8 @@
 
                     <xpath expr="//button[@id='bid_confirm']" position="replace"/>
                     <xpath expr="//button[@id='draft_confirm']" position="replace">
-                        <button name="action_confirm_order" type="object" states="validated" string="Confirmer la commande" id="validate_confirm" class="oe_highlight"/>
+                        <button name="action_confirm_order" type="object" states="validated" string="Confirmer la commande" id="validate_confirm" class="oe_highlight"
+                                groups="comafrique_groups.group_resp_adv,comafrique_groups.group_administration"/>/>
                     </xpath>
 
                     <xpath expr="//button[@name='button_cancel']" position="before">
@@ -66,7 +67,8 @@
                         <button name="action_validate" type="object" states="direction" string="Valider"
                                 class="oe_highlight" id="direction_validate" groups="comafrique_groups.group_direction"/>
 
-
+                        <button name="action_cancel_all" type="object" string="Tout Annuler" id="direction_validate"
+                                attrs="{'invisible': [('state', 'in', ['draft', 'cancel'])]}" groups="comafrique_groups.group_direction,comafrique_groups.group_resp_adv,comafrique_groups.group_administration"/>
                     </xpath>
 
                     <field name="partner_ref" position="after">

@@ -119,7 +119,7 @@ class purchase(models.Model):
     nb_request = fields.Integer(compute = _field_count)
     notify = fields.Boolean('Notifier', default = True)
     state = fields.Selection([
-        ('draft', 'Demande de prix'),
+        ('draft', 'Brouillon'),
         ('sent', 'Demande de prix envoyée'),
         ('submitted', 'Responsable Q & L'),
         ('direction', 'Direction'),
@@ -166,3 +166,12 @@ class purchase(models.Model):
     def action_confirm_order(self):
         self.state = 'sent'
         self.button_confirm()
+
+    @api.multi
+    def action_cancel_all(self):
+        self.button_cancel()
+        if self.request_id :
+            self.request_id.action_draft()
+        if self.request_ids :
+            for request in self.request_ids :
+                request.action_draft()

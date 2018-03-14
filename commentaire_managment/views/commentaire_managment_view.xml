@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="commentaire_managment_form_id" model="ir.ui.view">
+            <field name="name">commentaire.managment.form_view</field>
+            <field name="model">commentaire.managment</field>
+            <field name="arch" type="xml">
+                <form string="Gestion des commentaires">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="user_id"/>
+                                <field name="res_model"/>
+                            </group>
+                            <group>
+                                <field name="res_id"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Commentaire">
+                                <field name="commentaire"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_commentaire_managment_form_view" model="ir.actions.act_window">
+            <field name="name">Commentaires</field>
+			<field name="res_model">commentaire.managment</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+        </record>
+    </data>
+</odoo>

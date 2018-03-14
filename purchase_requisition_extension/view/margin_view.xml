@@ -26,6 +26,7 @@
 					<field name="margin"/>
 					<field name="margin_percent" />
 					<field name="state" />
+					<field name="type_id"/>
 				</tree>
 			</field>
 		</record>
@@ -38,8 +39,14 @@
 				<form string="Request margin">
 					<header>
 
-						<button name="action_department" states="draft" string="Soumettre au Chef de Département"
-						type="object" class="oe_highlight" groups="comafrique_groups.group_user"/>
+						<button name="action_responsable_technique" states="draft" string="Soumettre au responsable technique"
+								type="object" class="oe_highlight" groups="comafrique_groups.group_user"/>
+
+						<button name="action_department" states="responsable" string="Soumettre au Chef de Département"
+						type="object" class="oe_highlight" groups="comafrique_groups.group_responsable_technique"/>
+
+						<button name="%(action_commentaire_managment_form_wizard)d" states="responsable" string="Retourner"
+						type="action" class="oe_highlight" groups="comafrique_groups.group_responsable_technique"/>
 
 						<button name="action_control" states="department" string="Transmettre au Contrôle de Gestion"
 						type="object" class="oe_highlight" groups="comafrique_groups.group_departement"/>
@@ -98,6 +105,8 @@
 							<group>
 								<field name="employee_id" readonly="0"  attrs="{'readonly': [('state','not in',('draft','controle'))]}"/>
 								<field name="department_id" readonly="0"  attrs="{'readonly': [('state','not in',('draft','controle'))]}"/>
+								<field name="type_id"/>
+								<field name="technicien_ids" invisible="1"/>
 								<field name="name" attrs="{'readonly': [('state','not in',('draft','controle'))]}"/>
 								<field name="order_ref"  attrs="{'readonly': [('state','not in',('draft','controle'))]}"/>
 								<field name="proforma_ref"  attrs="{'readonly': [('state','not in',('draft','controle'))]}"/>
@@ -145,6 +154,26 @@
 									<field name="margin" widget="monetary" options="{'currency_field': 'currency_id'}"/>
 
                             </group>
+							</page>
+							<page string="Commentaires">
+								<div>
+									  <field name="commentaire_ids" >
+										  <tree>
+											  <field name="create_uid" libelle="Créé par"/>
+											  <field name="create_date" libelle="Date de commentaire"/>
+											  <field name="commentaire"/>
+										  </tree>
+										  <form>
+											  <sheet>
+												  <notebook>
+													  <page string="Commentaire">
+														  <field name="commentaire" />
+													  </page>
+												  </notebook>
+											  </sheet>
+										  </form>
+									  </field>
+								</div>
 							</page>
 						</notebook>
 					</sheet>
@@ -294,7 +323,7 @@
 
 		<menuitem id="request_margin_main_menu" name="Fiche de marge"
 		    parent="expression_besoin_menu_main"
-		  	groups="comafrique_groups.group_administration,comafrique_groups.group_budget_viewer,sales_team.group_sale_salesman"/>
+		  	groups="comafrique_groups.group_administration,comafrique_groups.group_budget_viewer,sales_team.group_sale_salesman,comafrique_groups.group_responsable_technique"/>
 
 		<menuitem id="request_margin_menu" name="Fiche de marge"
 		    parent="request_margin_main_menu" action="action_request_margin"/>
@@ -421,6 +450,64 @@
 
 		<menuitem id="margin_modele_menu" name="modèle de coûts"
 		    parent="config_menu_main" action="action_margin_modele"/>
+
+		<!-- Gestion des types de fiches de marge -->
+
+		<record id="type_fiche_magre_tree_view" model="ir.ui.view">
+			<field name="name">request.type.fiche.marge.tree</field>
+			<field name="model">request.type.fiche.marge</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Type de fiche de marge">
+					<field name="name" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="type_fiche_marge_form_view" model="ir.ui.view">
+			<field name="name">request.type.fiche.marge.form</field>
+			<field name="model">request.type.fiche.marge</field>
+			<field name="arch" type="xml">
+				<form string="Modele" version="7.0">
+					<sheet>
+						<group col="4" >
+							<field name="name" col="2"/>
+						</group>
+						<notebook>
+							<page string="Initiateurs">
+								<field name="employee_ids" nolabel="1" colspan="4">
+								</field>
+							</page>
+							<page string="Techniciens">
+								<field name="technique_ids" />
+							</page>
+						</notebook>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<!--<record id="type_fiche_marge_form_search_view" model="ir.ui.view">-->
+			<!--<field name="name">purchase.request.margin.modele.search</field>-->
+			<!--<field name="model">purchase.request.margin.modele</field>-->
+			<!--<field name="arch" type="xml">-->
+				<!--<search string="Search">-->
+					<!--<field name="department_id"/>-->
+				<!--</search>-->
+			<!--</field>-->
+		<!--</record>-->
+
+		<record model="ir.actions.act_window" id="action_type_fiche_marge_tree">
+			<field name="name">Type de fiche de marge</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">request.type.fiche.marge</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+
+		</record>
+
+		<menuitem id="type_fiche_marge_menu" name="Type de fiches de marge"
+		    parent="config_menu_main" action="action_type_fiche_marge_tree"/>
 
     </data>
 </odoo>

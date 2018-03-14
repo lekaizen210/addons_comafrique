@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="read_xlsx_file_tree" model="ir.ui.view">
+           <field name="name">read.xlsx.file.tree</field>
+            <field name="model">read.xlsx.file</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="file"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="read_xlsx_file_form" model="ir.ui.view">
+            <field name="name">read.xlsx.file.menu</field>
+            <field name="model">read.xlsx.file</field>
+            <field name="arch" type="xml">
+                <form string="Fichier">
+                    <sheet>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="file"/>
+                        </group>
+                        <notebook>
+                            <page string="Ligne xlsx">
+                                <field name="line_ids">
+                                    <tree>
+                                        <field name="nom"/>
+                                        <field name="prenom"/>
+                                        <field name="age"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <footer>
+                        <button type="object" name="get_file" string="Get data from file" class="btn-primary"/>
+                        <button string="Annuler" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="read_xlsx_file_action" model="ir.actions.act_window">
+            <field name="name">action.fichier</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">read.xlsx.file</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="read_xlsx_file_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem name="Upload file"
+                  id="read_xlsx_file_menu"
+                  action="read_xlsx_file_action"
+                  parent="account.menu_finance"/>
+    </data>
+</odoo>
