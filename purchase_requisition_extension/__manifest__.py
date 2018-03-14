@@ -23,7 +23,7 @@
     # always loaded
     'data': [
         'security/rules.xml',
-        'security/ir.model.access.csv',
+        # 'security/ir.model.access.csv',
         'workflow/wkl_request.xml',
         'data/sequence.xml',
         'data/template.xml',
